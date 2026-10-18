@@ -455,7 +455,11 @@ const ProfilePage: FC = () => {
           className={styles.signOutBtn}
           title="Sign out of your account"
         >
-          <LogOut size={16} />
+          {signOutMutation.isPending ? (
+            <Loader2 size={16} className={styles.spinIcon} />
+          ) : (
+            <LogOut size={16} />
+          )}
           <span>{signOutMutation.isPending ? "Signing out..." : "Sign Out"}</span>
         </button>
       </section>

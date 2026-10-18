@@ -33,6 +33,10 @@
   }
 }
 
+.spinIcon {
+  animation: spin 0.8s linear infinite;
+}
+
 // 1. Profile Header Card
 .profileHeaderCard {
   background-color: theme.$color-surface;

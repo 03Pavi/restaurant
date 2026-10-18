@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Utensils, LogOut } from "lucide-react";
+import { Utensils, LogOut, Loader2 } from "lucide-react";
 import { useSessionQuery } from "@/lib/auth/use-session-query";
 import { useSignOutMutation } from "@/lib/auth/use-sign-out-mutation";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             onClick={() => signOutMutation.mutate()}
             disabled={signOutMutation.isPending}
           >
-            <LogOut size={14} />
+            {signOutMutation.isPending ? (
+              <Loader2 size={14} className={styles.spinIcon} />
+            ) : (
+              <LogOut size={14} />
+            )}
             <span>{signOutMutation.isPending ? "Signing out..." : "Sign Out"}</span>
           </Button>
         </div>

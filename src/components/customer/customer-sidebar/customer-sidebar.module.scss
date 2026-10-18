@@ -153,9 +153,25 @@
   justify-content: center;
   transition: all 0.2s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     color: theme.$color-primary;
     background-color: theme.$color-primary-subtle-bg;
+  }
+}
+
+.actionButtonLoading {
+  color: theme.$color-primary !important;
+  cursor: wait !important;
+  opacity: 0.9;
+}
+
+.spinIcon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

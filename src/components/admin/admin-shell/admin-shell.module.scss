@@ -115,3 +115,13 @@
   flex: 1;
   padding: theme.$space-6;
 }
+
+.spinIcon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

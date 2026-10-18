@@ -1,0 +1,307 @@
+@use "@/styles/theme" as theme;
+
+// =============================================================================
+// DESKTOP SIDEBAR (Visible on screens >= 1025px)
+// =============================================================================
+.desktopSidebar {
+  width: 240px;
+  min-width: 240px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: theme.$space-6 theme.$space-4;
+  background-color: theme.$color-surface;
+  border-right: 1px solid theme.$color-border;
+  user-select: none;
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+}
+
+.topSection {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-8;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-3;
+  text-decoration: none;
+}
+
+.logoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, theme.$color-primary 0%, theme.$color-primary-light 100%);
+  color: #FFFFFF;
+  border-radius: theme.$radius-md;
+  box-shadow: 0 4px 10px rgba(232, 93, 4, 0.3);
+}
+
+.brandName {
+  font-size: theme.$font-size-xl;
+  font-weight: theme.$font-weight-extrabold;
+  color: theme.$color-text-primary;
+  letter-spacing: -0.02em;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-2;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-3;
+  padding: 10px 14px;
+  border-radius: theme.$radius-lg;
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-medium;
+  color: theme.$color-text-body;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: theme.$color-primary;
+    background-color: theme.$color-primary-subtle-bg;
+  }
+}
+
+.navLinkActive {
+  background-color: rgba(232, 93, 4, 0.1) !important;
+  color: theme.$color-primary !important;
+  font-weight: theme.$font-weight-bold;
+}
+
+.profileCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background-color: theme.$color-surface;
+  border: 1px solid theme.$color-border;
+  border-radius: theme.$radius-xl;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: rgba(232, 93, 4, 0.3);
+    box-shadow: theme.$shadow-card-resting;
+  }
+}
+
+.profileInfo {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-3;
+  min-width: 0;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: theme.$color-primary;
+  color: #FFFFFF;
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-bold;
+  border-radius: theme.$radius-full;
+  flex-shrink: 0;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.userName {
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userRole {
+  font-size: theme.$font-size-xs;
+  color: theme.$color-text-muted;
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  color: theme.$color-text-muted;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: theme.$radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: theme.$color-primary;
+    background-color: theme.$color-primary-subtle-bg;
+  }
+}
+
+.loginButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: theme.$space-2;
+  width: 100%;
+  padding: 10px 14px;
+  background-color: theme.$color-surface;
+  color: theme.$color-primary;
+  border: 1.5px solid theme.$color-primary;
+  border-radius: theme.$radius-xl;
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-bold;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(232, 93, 4, 0.08);
+
+  &:hover {
+    background-color: theme.$color-primary;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(232, 93, 4, 0.25);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// =============================================================================
+// MOBILE BOTTOM DOCK (Visible on screens <= 1024px)
+// =============================================================================
+.mobileDockWrapper {
+  display: none;
+
+  @media (max-width: 1024px) {
+    display: block;
+    position: fixed;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: theme.$z-fixed;
+    max-width: 480px;
+    margin: 0 auto;
+    pointer-events: none;
+  }
+}
+
+.mobileDock {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: theme.$radius-2xl;
+  padding: 6px 4px;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.14),
+              0 4px 12px rgba(232, 93, 4, 0.1);
+}
+
+.dockItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 2px;
+  color: theme.$color-text-muted;
+  text-decoration: none;
+  border-radius: theme.$radius-lg;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.dockItemActive {
+  color: theme.$color-primary !important;
+
+  .dockIconWrapper {
+    background-color: rgba(232, 93, 4, 0.12);
+    color: theme.$color-primary;
+  }
+
+  .dockLabel {
+    color: theme.$color-primary;
+    font-weight: theme.$font-weight-bold;
+  }
+}
+
+.dockIconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: theme.$radius-full;
+  transition: all 0.2s ease;
+}
+
+.dockLabel {
+  font-size: 10px;
+  font-weight: theme.$font-weight-medium;
+  color: theme.$color-text-muted;
+  letter-spacing: -0.01em;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -3px;
+  right: -6px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: theme.$radius-full;
+  font-size: 10px;
+  font-weight: theme.$font-weight-bold;
+  background-color: theme.$color-primary;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(232, 93, 4, 0.4);
+}
+
+.dockAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: theme.$color-primary;
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: theme.$font-weight-bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

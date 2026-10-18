@@ -1,0 +1,105 @@
+@use "@/styles/theme" as theme;
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: theme.$z-sticky;
+  width: 100%;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: theme.$space-3 theme.$space-4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: theme.$space-4;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-2;
+  font-size: theme.$font-size-xl;
+  font-weight: theme.$font-weight-extrabold;
+  color: var(--color-primary);
+  letter-spacing: theme.$letter-spacing-heading;
+  text-decoration: none;
+}
+
+.brandIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: theme.$radius-md;
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.brandName {
+  color: var(--color-text-primary);
+
+  span {
+    color: var(--color-primary);
+  }
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-3;
+}
+
+.dietaryToggle {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-2;
+  padding: 4px 10px;
+  border-radius: theme.$radius-full;
+  border: 1px solid theme.$color-border;
+  background-color: theme.$color-surface;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: rgba(22, 163, 74, 0.4);
+  }
+}
+
+.dietaryLabel {
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-semibold;
+  color: theme.$color-text-body;
+}
+
+.cartButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: theme.$space-2;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 4px;
+  border-radius: theme.$radius-full;
+  font-size: 11px;
+}
+
+.userLabel {
+  font-size: theme.$font-size-sm;
+  color: var(--color-text-muted);
+  font-weight: theme.$font-weight-medium;
+}

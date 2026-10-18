@@ -1,0 +1,49 @@
+@use '@/styles/theme' as theme;
+
+.tabsList {
+  display: inline-flex;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: theme.$radius-lg;
+  background-color: var(--muted);
+  padding: theme.$space-1;
+  color: var(--color-text-muted);
+}
+
+.tabsTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border-radius: theme.$radius-md;
+  padding: theme.$space-2 theme.$space-4;
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-medium;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+
+  &:hover {
+    color: var(--color-text-primary);
+  }
+
+  &[data-state="active"] {
+    background-color: var(--color-surface);
+    color: var(--color-primary);
+    font-weight: theme.$font-weight-bold;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  &:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+
+.tabsContent {
+  margin-top: theme.$space-4;
+  outline: none;
+}

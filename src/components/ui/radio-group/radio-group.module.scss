@@ -1,0 +1,46 @@
+@use '@/styles/theme' as theme;
+
+.radioGroup {
+  display: grid;
+  gap: theme.$space-3;
+}
+
+.radioItem {
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: theme.$radius-full;
+  border: 1.5px solid var(--color-border);
+  background-color: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--color-primary);
+  }
+
+  &[data-state="checked"] {
+    border-color: var(--color-primary);
+    background-color: var(--color-surface);
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-primary-subtle-bg);
+  }
+}
+
+.indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot {
+  height: 0.625rem;
+  width: 0.625rem;
+  border-radius: theme.$radius-full;
+  background-color: var(--color-primary);
+}

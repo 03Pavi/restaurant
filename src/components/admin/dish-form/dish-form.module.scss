@@ -1,0 +1,86 @@
+@use '@/styles/theme' as theme;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-4;
+  margin-top: theme.$space-2;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: theme.$space-3;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-2;
+}
+
+.label {
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-semibold;
+  color: var(--color-text-body);
+}
+
+.textarea {
+  min-height: 4.5rem;
+  width: 100%;
+  border-radius: theme.$radius-md;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: theme.$space-2 theme.$space-3;
+  font-size: theme.$font-size-sm;
+  color: var(--color-text-primary);
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  &:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary-subtle-bg);
+  }
+}
+
+.toggleField {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: theme.$space-3;
+  border-radius: theme.$radius-md;
+  border: 1px solid var(--color-border);
+  background-color: #FAFAFB;
+}
+
+.toggleLabelGroup {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-2;
+}
+
+.toggleTitle {
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-semibold;
+  color: var(--color-text-primary);
+}
+
+.toggleSubtitle {
+  font-size: theme.$font-size-xs;
+  color: var(--color-text-muted);
+}
+
+.errorMessage {
+  padding: theme.$space-2 theme.$space-3;
+  border-radius: theme.$radius-sm;
+  background-color: #FFF1F2;
+  border: 1px solid #FECDD3;
+  color: var(--destructive);
+  font-size: theme.$font-size-xs;
+}

@@ -1,0 +1,255 @@
+@use "@/styles/theme" as theme;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: theme.$space-5;
+  padding-top: theme.$space-2;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: theme.$font-weight-extrabold;
+  color: theme.$color-text-primary;
+  letter-spacing: -0.02em;
+
+  @media (max-width: theme.$breakpoint-sm) {
+    font-size: 1.45rem;
+  }
+}
+
+.subtitle {
+  margin: 0;
+  font-size: theme.$font-size-sm;
+  color: theme.$color-text-muted;
+}
+
+.searchBarWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background-color: theme.$color-surface;
+  border: 2px solid theme.$color-primary;
+  border-radius: theme.$radius-lg;
+  padding: 12px 16px;
+  box-shadow: 0 4px 14px rgba(232, 93, 4, 0.12);
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    box-shadow: 0 0 0 4px rgba(232, 93, 4, 0.2);
+  }
+}
+
+.searchIcon {
+  color: theme.$color-primary;
+  margin-right: theme.$space-3;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: theme.$font-size-base;
+  color: theme.$color-text-primary;
+  font-weight: theme.$font-weight-medium;
+
+  &::placeholder {
+    color: theme.$color-text-muted;
+    font-weight: theme.$font-weight-regular;
+  }
+}
+
+.clearIconBtn {
+  background: none;
+  border: none;
+  color: theme.$color-text-muted;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: theme.$radius-full;
+  transition: all 0.15s ease;
+
+  &:hover {
+    color: theme.$color-primary;
+    background-color: theme.$color-primary-subtle-bg;
+  }
+}
+
+.tabsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid theme.$color-border;
+  padding-bottom: 2px;
+  margin-top: theme.$space-2;
+  gap: theme.$space-4;
+  flex-wrap: wrap;
+}
+
+.tabsLeft {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-4;
+}
+
+.tabBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-semibold;
+  color: theme.$color-text-muted;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: theme.$color-text-primary;
+  }
+}
+
+.tabBtnActive {
+  color: theme.$color-primary !important;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: theme.$color-primary;
+    border-radius: theme.$radius-full;
+  }
+}
+
+.vegToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-bold;
+  color: #16A34A;
+  background-color: theme.$color-surface;
+  border: 1.5px solid #16A34A;
+  border-radius: theme.$radius-md;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: rgba(22, 163, 74, 0.08);
+  }
+}
+
+.vegToggleBtnActive {
+  background-color: #16A34A !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+}
+
+.resultsArea {
+  margin-top: theme.$space-2;
+  display: flex;
+  flex-direction: column;
+}
+
+.exploreHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: theme.$space-4;
+}
+
+.exploreTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-text-primary;
+}
+
+.exploreSubtitle {
+  margin: 0;
+  font-size: theme.$font-size-xs;
+  color: theme.$color-text-muted;
+}
+
+.emptyResultsCard {
+  width: 100%;
+  background-color: theme.$color-surface;
+  border: 1px solid theme.$color-border;
+  border-radius: theme.$radius-2xl;
+  padding: theme.$space-16 theme.$space-6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: theme.$space-3;
+  box-shadow: theme.$shadow-card-resting;
+}
+
+.emptySearchIcon {
+  color: #94A3B8;
+  stroke-width: 1.8;
+  margin-bottom: theme.$space-2;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-text-primary;
+}
+
+.emptySubtitle {
+  margin: 0;
+  font-size: theme.$font-size-sm;
+  color: theme.$color-text-muted;
+  max-width: 420px;
+}
+
+.clearFiltersBtn {
+  margin-top: theme.$space-2;
+  padding: 10px 24px;
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-primary;
+  background-color: theme.$color-surface;
+  border: 1.5px solid theme.$color-primary;
+  border-radius: theme.$radius-md;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: theme.$color-primary;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(232, 93, 4, 0.25);
+  }
+}
+
+.dishGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: theme.$space-4;
+
+  @media (max-width: theme.$breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}

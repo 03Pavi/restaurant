@@ -1,0 +1,44 @@
+@use '@/styles/theme' as theme;
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border-radius: theme.$radius-md;
+  border: 1px solid var(--color-primary);
+  background-color: var(--color-surface);
+  overflow: hidden;
+  height: 2rem;
+  box-shadow: 0 1px 3px rgba(232, 93, 4, 0.15);
+}
+
+.stepButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 100%;
+  color: var(--color-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: theme.$font-weight-bold;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-primary-subtle-bg);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.count {
+  min-width: 1.75rem;
+  text-align: center;
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-bold;
+  color: var(--color-primary);
+  user-select: none;
+}

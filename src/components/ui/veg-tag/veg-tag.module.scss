@@ -1,0 +1,35 @@
+@use '@/styles/theme' as theme;
+
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 3px;
+  background-color: var(--color-surface);
+  flex-shrink: 0;
+}
+
+.veg {
+  border: 1.5px solid var(--color-dietary-veg);
+}
+
+.nonVeg {
+  border: 1.5px solid var(--color-dietary-non-veg);
+}
+
+.vegDot {
+  width: 7px;
+  height: 7px;
+  border-radius: theme.$radius-full;
+  background-color: var(--color-dietary-veg);
+}
+
+.nonVegTriangle {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 7px solid var(--color-dietary-non-veg);
+}

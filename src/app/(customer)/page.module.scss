@@ -1,0 +1,174 @@
+@use "@/styles/theme" as theme;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.menuSection {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-4;
+  margin-top: theme.$space-2;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: theme.$space-4;
+  flex-wrap: wrap;
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: theme.$font-weight-extrabold;
+  color: theme.$color-text-primary;
+  letter-spacing: -0.02em;
+}
+
+.sectionSubtitle {
+  margin: 0;
+  font-size: theme.$font-size-xs;
+  color: theme.$color-text-muted;
+}
+
+.filtersRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: theme.$space-3;
+  flex-wrap: wrap;
+}
+
+.dietaryPills {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-2;
+}
+
+.dietaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-semibold;
+  color: theme.$color-text-body;
+  background-color: theme.$color-surface;
+  border: 1px solid theme.$color-border;
+  border-radius: theme.$radius-full;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: rgba(232, 93, 4, 0.4);
+    color: theme.$color-primary;
+  }
+}
+
+.dietaryButtonActive {
+  background-color: theme.$color-primary-subtle-bg !important;
+  color: theme.$color-primary !important;
+  border-color: theme.$color-primary !important;
+}
+
+.categoryGroup {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-4;
+  margin-bottom: theme.$space-8;
+}
+
+.categoryHeading {
+  display: flex;
+  align-items: baseline;
+  gap: theme.$space-2;
+  margin: 0;
+  padding-bottom: theme.$space-2;
+  border-bottom: 2px solid theme.$color-divider;
+}
+
+.categoryTitle {
+  font-size: 1.2rem;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-text-primary;
+  margin: 0;
+}
+
+.dishCount {
+  font-size: theme.$font-size-xs;
+  color: theme.$color-text-muted;
+  font-weight: theme.$font-weight-medium;
+}
+
+.dishGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: theme.$space-4;
+
+  @media (max-width: theme.$breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loadingGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: theme.$space-4;
+
+  @media (max-width: theme.$breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.skeletonCard {
+  height: 240px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: theme.$radius-xl;
+  border: 1px solid theme.$color-border;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.emptyCard {
+  border-radius: theme.$radius-2xl;
+  border: 1px dashed theme.$color-border;
+  background-color: theme.$color-surface;
+  padding: theme.$space-12 theme.$space-6;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: theme.$space-2;
+  color: theme.$color-text-muted;
+
+  h3 {
+    margin: 0;
+    font-size: theme.$font-size-base;
+    color: theme.$color-text-primary;
+  }
+
+  p {
+    margin: 0;
+    font-size: theme.$font-size-xs;
+  }
+}

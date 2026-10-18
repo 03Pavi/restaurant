@@ -1,0 +1,38 @@
+@use '@/styles/theme' as theme;
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: theme.$radius-sm;
+  padding: theme.$space-1 theme.$space-2;
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-semibold;
+  transition: colors 0.2s;
+  border: 1px solid transparent;
+}
+
+.variantDefault {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
+.variantSecondary {
+  background-color: var(--muted);
+  color: var(--color-text-primary);
+}
+
+.variantSubtle {
+  background-color: var(--color-primary-subtle-bg);
+  color: var(--color-primary);
+  border-color: rgba(234, 88, 12, 0.2);
+}
+
+.variantOutline {
+  border-color: var(--color-border);
+  color: var(--color-text-body);
+}
+
+.variantDestructive {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}

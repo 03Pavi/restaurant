@@ -1,0 +1,89 @@
+@use '@/styles/theme' as theme;
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: theme.$space-2;
+  padding: theme.$space-1 theme.$space-3;
+  border-radius: theme.$radius-full;
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-semibold;
+  text-transform: capitalize;
+  border: 1px solid transparent;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: theme.$radius-full;
+}
+
+.placed {
+  background-color: #FFF7ED;
+  color: var(--color-status-placed);
+  border-color: #FED7AA;
+
+  .dot {
+    background-color: var(--color-status-placed);
+  }
+}
+
+.accepted {
+  background-color: #F0F9FF;
+  color: var(--color-status-accepted);
+  border-color: #BAE6FD;
+
+  .dot {
+    background-color: var(--color-status-accepted);
+  }
+}
+
+.preparing {
+  background-color: #F5F3FF;
+  color: var(--color-status-preparing);
+  border-color: #DDD6FE;
+
+  .dot {
+    background-color: var(--color-status-preparing);
+  }
+}
+
+.ready {
+  background-color: #F0FDF4;
+  color: var(--color-status-ready);
+  border-color: #BBF7D0;
+
+  .dot {
+    background-color: var(--color-status-ready);
+  }
+}
+
+.outForDelivery {
+  background-color: #F0FDFA;
+  color: var(--color-status-out-for-delivery);
+  border-color: #99F6E4;
+
+  .dot {
+    background-color: var(--color-status-out-for-delivery);
+  }
+}
+
+.delivered {
+  background-color: #F8FAFC;
+  color: var(--color-status-delivered);
+  border-color: #E2E8F0;
+
+  .dot {
+    background-color: var(--color-status-delivered);
+  }
+}
+
+.cancelled {
+  background-color: #F1F5F9;
+  color: var(--color-status-cancelled);
+  border-color: #CBD5E1;
+
+  .dot {
+    background-color: var(--color-status-cancelled);
+  }
+}

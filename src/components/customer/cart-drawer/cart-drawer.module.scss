@@ -1,0 +1,259 @@
+@use "@/styles/theme" as theme;
+
+.drawerContent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: theme.$space-6 theme.$space-4 theme.$space-4;
+  overflow-y: auto;
+}
+
+.header {
+  margin-bottom: theme.$space-4;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-2;
+}
+
+.title {
+  margin: 0;
+  font-size: theme.$font-size-xl;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-text-primary;
+}
+
+.countBadge {
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-semibold;
+  background-color: theme.$color-primary-subtle-bg;
+  color: theme.$color-primary;
+  padding: 2px 8px;
+  border-radius: theme.$radius-full;
+}
+
+.orderConfigSection {
+  background-color: theme.$color-divider;
+  padding: theme.$space-3;
+  border-radius: theme.$radius-lg;
+  margin-bottom: theme.$space-4;
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-3;
+}
+
+.configRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.configLabel {
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-semibold;
+  color: theme.$color-text-body;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.typeButtonGroup {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: theme.$space-1;
+  background-color: theme.$color-surface;
+  padding: 3px;
+  border-radius: theme.$radius-md;
+  border: 1px solid theme.$color-border;
+}
+
+.typeButton {
+  padding: 6px 4px;
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-medium;
+  color: theme.$color-text-body;
+  background: transparent;
+  border: none;
+  border-radius: theme.$radius-sm;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+
+  &:hover {
+    color: theme.$color-text-primary;
+  }
+}
+
+.typeButtonActive {
+  background-color: theme.$color-primary !important;
+  color: #FFFFFF !important;
+  font-weight: theme.$font-weight-semibold;
+  box-shadow: 0 2px 6px rgba(232, 93, 4, 0.25);
+}
+
+.tableInput {
+  background-color: theme.$color-surface;
+  font-size: theme.$font-size-sm;
+  height: 36px;
+}
+
+.itemList {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-3;
+  padding-right: 2px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: theme.$space-12 theme.$space-4;
+  color: theme.$color-text-muted;
+  text-align: center;
+  gap: theme.$space-3;
+
+  p {
+    margin: 0;
+    font-size: theme.$font-size-sm;
+  }
+}
+
+.loadingSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-3;
+}
+
+.skeletonItem {
+  height: 64px;
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: theme.$radius-lg;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.cartItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: theme.$space-3;
+  padding: theme.$space-3;
+  background-color: theme.$color-surface;
+  border: 1px solid theme.$color-border;
+  border-radius: theme.$radius-lg;
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: rgba(232, 93, 4, 0.3);
+  }
+}
+
+.itemMeta {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-2;
+  flex: 1;
+  min-width: 0;
+}
+
+.itemDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.itemName {
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-medium;
+  color: theme.$color-text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemPrice {
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-primary;
+}
+
+.itemUnavailableWarning {
+  font-size: 11px;
+  color: #DC2626;
+  font-weight: theme.$font-weight-medium;
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: theme.$space-4;
+  border-top: 1px solid theme.$color-border;
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-3;
+}
+
+.subtotalRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: theme.$font-size-base;
+  color: theme.$color-text-body;
+
+  strong {
+    font-size: theme.$font-size-xl;
+    font-weight: theme.$font-weight-bold;
+    color: theme.$color-text-primary;
+  }
+}
+
+.unavailableAlert {
+  background-color: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #DC2626;
+  font-size: theme.$font-size-xs;
+  padding: theme.$space-2 theme.$space-3;
+  border-radius: theme.$radius-md;
+}
+
+.checkoutButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: theme.$space-2;
+  background-color: theme.$color-primary;
+  color: #FFFFFF;
+  padding: theme.$space-3;
+  border-radius: theme.$radius-lg;
+  font-weight: theme.$font-weight-semibold;
+  font-size: theme.$font-size-base;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    background-color: theme.$color-primary-dark;
+    box-shadow: 0 4px 14px rgba(232, 93, 4, 0.35);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+}

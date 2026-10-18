@@ -1,0 +1,165 @@
+// =============================================================================
+// DINEDIRECT SINGLE PARENT THEME CONFIG
+// All tokens, variables, scales, and CSS custom properties live here.
+// Every .module.scss references tokens via: @use '@/styles/theme' as theme;
+// =============================================================================
+
+// --- Primary Brand Palette Tokens ---
+$color-primary: #E85D04;
+$color-primary-light: #F48C06;
+$color-primary-dark: #D00000;
+$color-primary-subtle-bg: rgba(234, 88, 12, 0.08);
+
+// --- Neutrals & Surfaces ---
+$color-background: #F8F9FA;
+$color-surface: #FFFFFF;
+$color-text-primary: #0F172A;
+$color-text-body: #334155;
+$color-text-muted: #64748B;
+$color-border: #E2E8F0;
+$color-divider: #F1F5F9;
+
+// --- Kitchen Order Status Colors ---
+$color-status-placed: #EA580C;
+$color-status-accepted: #0284C7;
+$color-status-preparing: #7C3AED;
+$color-status-ready: #16A34A;
+$color-status-out-for-delivery: #0D9488;
+$color-status-delivered: #334155;
+$color-status-cancelled: #64748B;
+
+// --- Dietary Signatures ---
+$color-dietary-veg: #16A34A;
+$color-dietary-non-veg: #DC2626;
+
+// --- Radii Scale ---
+$radius-sm: 8px;
+$radius-md: 10px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+$radius-2xl: 20px;
+$radius-full: 9999px;
+
+// --- Elevation & Shadows ---
+$shadow-card-resting: 0 4px 20px rgba(0, 0, 0, 0.05);
+$shadow-card-hover: 0 12px 24px -6px rgba(0, 0, 0, 0.07);
+$shadow-button-hover: 0 4px 12px rgba(232, 93, 4, 0.25);
+$shadow-popover: 0 10px 38px -10px rgba(22, 23, 24, 0.35), 0 10px 20px -15px rgba(22, 23, 24, 0.2);
+
+// --- Spacing Scale ---
+$space-1: 0.25rem; // 4px
+$space-2: 0.5rem;  // 8px
+$space-3: 0.75rem; // 12px
+$space-4: 1rem;    // 16px
+$space-5: 1.25rem; // 20px
+$space-6: 1.5rem;  // 24px
+$space-8: 2rem;    // 32px
+$space-10: 2.5rem; // 40px
+$space-12: 3rem;   // 48px
+$space-16: 4rem;   // 64px
+
+// --- Typography Scale ---
+$font-family-base: var(--font-inter, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-extrabold: 800;
+
+$font-size-xs: 0.75rem;     // 12px
+$font-size-sm: 0.875rem;    // 14px
+$font-size-base: 1rem;      // 16px
+$font-size-lg: 1.125rem;    // 18px
+$font-size-xl: 1.25rem;     // 20px
+$font-size-2xl: 1.5rem;     // 24px
+$font-size-3xl: 1.875rem;   // 30px
+$font-size-4xl: 2.25rem;    // 36px
+
+$letter-spacing-heading: -0.02em;
+$letter-spacing-tight: -0.01em;
+$letter-spacing-normal: 0em;
+
+// --- Breakpoints ---
+$breakpoint-xs: 480px;
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+
+// --- Z-Index Scale ---
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal-backdrop: 1040;
+$z-modal: 1050;
+$z-popover: 1060;
+$z-tooltip: 1070;
+$z-toast: 2000;
+
+// --- CSS Custom Properties & Shadcn Token Aliases Mixin ---
+// Invoked in app/globals.scss to establish global :root tokens without bloating pure SCSS modules
+@mixin root-tokens {
+  :root {
+    // Brand Tokens
+    --color-primary: #{$color-primary};
+    --color-primary-light: #{$color-primary-light};
+    --color-primary-dark: #{$color-primary-dark};
+    --color-primary-subtle-bg: #{$color-primary-subtle-bg};
+
+    // Neutrals & Surfaces
+    --color-background: #{$color-background};
+    --color-surface: #{$color-surface};
+    --color-text-primary: #{$color-text-primary};
+    --color-text-body: #{$color-text-body};
+    --color-text-muted: #{$color-text-muted};
+    --color-border: #{$color-border};
+    --color-divider: #{$color-divider};
+
+    // Statuses
+    --color-status-placed: #{$color-status-placed};
+    --color-status-accepted: #{$color-status-accepted};
+    --color-status-preparing: #{$color-status-preparing};
+    --color-status-ready: #{$color-status-ready};
+    --color-status-out-for-delivery: #{$color-status-out-for-delivery};
+    --color-status-delivered: #{$color-status-delivered};
+    --color-status-cancelled: #{$color-status-cancelled};
+
+    // Dietary
+    --color-dietary-veg: #{$color-dietary-veg};
+    --color-dietary-non-veg: #{$color-dietary-non-veg};
+
+    // Radii
+    --radius-sm: #{$radius-sm};
+    --radius-md: #{$radius-md};
+    --radius-lg: #{$radius-lg};
+    --radius-xl: #{$radius-xl};
+    --radius-2xl: #{$radius-2xl};
+    --radius-full: #{$radius-full};
+
+    // Shadows
+    --shadow-card-resting: #{$shadow-card-resting};
+    --shadow-card-hover: #{$shadow-card-hover};
+    --shadow-button-hover: #{$shadow-button-hover};
+    --shadow-popover: #{$shadow-popover};
+
+    // shadcn Aliases Required by Specification
+    --primary: #E85D04;
+    --primary-foreground: #FFFFFF;
+    --background: #F8F9FA;
+    --foreground: #0F172A;
+    --card: #FFFFFF;
+    --card-foreground: #0F172A;
+    --popover: #FFFFFF;
+    --popover-foreground: #0F172A;
+    --muted: #F1F5F9;
+    --muted-foreground: #64748B;
+    --border: #E2E8F0;
+    --input: #E2E8F0;
+    --ring: #E85D04;
+    --radius: 0.625rem;
+    --destructive: #DC2626;
+    --destructive-foreground: #FFFFFF;
+    --accent: rgba(234, 88, 12, 0.08);
+    --accent-foreground: #E85D04;
+  }
+}

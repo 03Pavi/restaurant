@@ -1,0 +1,62 @@
+@use "@/styles/theme" as theme;
+
+.container {
+  width: 100%;
+  overflow-x: auto;
+  padding: theme.$space-2 0 theme.$space-4;
+  margin-bottom: theme.$space-4;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.tabList {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-2;
+  min-width: max-content;
+}
+
+.tabButton {
+  display: inline-flex;
+  align-items: center;
+  gap: theme.$space-2;
+  padding: theme.$space-2 theme.$space-4;
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-medium;
+  color: theme.$color-text-body;
+  background-color: theme.$color-surface;
+  border: 1px solid theme.$color-border;
+  border-radius: theme.$radius-full;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+
+  &:hover {
+    color: theme.$color-text-primary;
+    border-color: rgba(232, 93, 4, 0.4);
+    background-color: theme.$color-primary-subtle-bg;
+  }
+}
+
+.tabActive {
+  background-color: theme.$color-primary !important;
+  color: #FFFFFF !important;
+  border-color: theme.$color-primary !important;
+  box-shadow: 0 4px 12px rgba(232, 93, 4, 0.25);
+}
+
+.countBadge {
+  font-size: theme.$font-size-xs;
+  padding: 1px 6px;
+  border-radius: theme.$radius-full;
+  background: rgba(0, 0, 0, 0.06);
+
+  .tabActive & {
+    background: rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+  }
+}

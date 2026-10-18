@@ -1,0 +1,188 @@
+@use "@/styles/theme" as theme;
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: theme.$color-surface;
+  border: 1px solid theme.$color-border;
+  border-radius: theme.$radius-xl;
+  overflow: hidden;
+  box-shadow: theme.$shadow-card-resting;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: theme.$shadow-card-hover;
+    border-color: rgba(232, 93, 4, 0.25);
+  }
+}
+
+.cardUnavailable {
+  opacity: 0.75;
+  filter: grayscale(0.2);
+
+  &:hover {
+    transform: none;
+    box-shadow: theme.$shadow-card-resting;
+    border-color: theme.$color-border;
+  }
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background-color: theme.$color-divider;
+  overflow: hidden;
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 0.3s ease;
+
+  .card:hover & {
+    transform: scale(1.03);
+  }
+}
+
+.placeholderImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: theme.$color-text-muted;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.unavailableOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.unavailableText {
+  color: #FFFFFF;
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-bold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background-color: rgba(220, 38, 38, 0.9);
+  padding: 4px 10px;
+  border-radius: theme.$radius-sm;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: theme.$space-4;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: theme.$space-2;
+  margin-bottom: theme.$space-2;
+}
+
+.titleArea {
+  display: flex;
+  align-items: flex-start;
+  gap: theme.$space-2;
+  flex: 1;
+}
+
+.dietaryWrapper {
+  padding-top: 3px;
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: theme.$font-size-base;
+  font-weight: theme.$font-weight-semibold;
+  color: theme.$color-text-primary;
+  line-height: 1.3;
+}
+
+.price {
+  font-size: theme.$font-size-base;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-primary;
+  flex-shrink: 0;
+}
+
+.description {
+  margin: 0 0 theme.$space-4;
+  font-size: theme.$font-size-sm;
+  color: theme.$color-text-body;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: theme.$space-2;
+  margin-top: auto;
+  padding-top: theme.$space-3;
+  border-top: 1px solid theme.$color-divider;
+}
+
+.prepTime {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: theme.$font-size-xs;
+  color: theme.$color-text-muted;
+}
+
+.actionArea {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-primary;
+  background-color: theme.$color-primary-subtle-bg;
+  border: 1px solid rgba(232, 93, 4, 0.3);
+  border-radius: theme.$radius-md;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: theme.$color-primary;
+    color: #FFFFFF;
+    border-color: theme.$color-primary;
+    box-shadow: theme.$shadow-button-hover;
+  }
+}
+
+.unavailableBadge {
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-medium;
+  color: theme.$color-text-muted;
+}

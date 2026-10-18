@@ -8,15 +8,35 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
+  },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.3",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.7",
     "@mui/material": "^6.4.8",
+    "@prisma/client": "6.19.3",
+    "@radix-ui/react-dialog": "^1.3.1",
+    "@radix-ui/react-radio-group": "^1.5.1",
+    "@radix-ui/react-select": "^2.4.1",
+    "@radix-ui/react-slot": "^1.5.0",
+    "@radix-ui/react-switch": "^1.4.1",
+    "@radix-ui/react-tabs": "^1.2.1",
     "@reduxjs/toolkit": "^2.6.0",
+    "@supabase/supabase-js": "^2.118.0",
+    "@tanstack/react-query": "^5.104.4",
     "axios": "^1.8.4",
+    "bcryptjs": "^3.0.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "firebase": "^13.0.0",
     "i18next": "^24.2.2",
+    "i18next-browser-languagedetector": "^8.0.4",
+    "lucide-react": "^1.59.0",
     "next": "^15.2.1",
+    "next-auth": "^5.0.0-beta.32",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.54.2",
@@ -24,13 +44,21 @@
     "react-redux": "^9.2.0",
     "redux-persist": "^6.0.0",
     "sass": "^1.85.1",
-    "i18next-browser-languagedetector": "^8.0.4"
+    "sonner": "^2.0.8",
+    "tailwind-merge": "^3.7.0",
+    "zod": "^4.6.7",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.17.23",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19",
+    "eslint": "8.57.1",
+    "eslint-config-next": "15.2.1",
+    "eslint-plugin-react": "^7.37.5",
     "prettier": "^3.5.3",
+    "prisma": "6.19.3",
     "typescript": "^5.8.2"
   }
 }

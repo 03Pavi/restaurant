@@ -1,0 +1,103 @@
+@use '@/styles/theme' as theme;
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: theme.$space-2;
+  white-space: nowrap;
+  border-radius: theme.$radius-md;
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-semibold;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-primary);
+  }
+
+  &:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+
+.variantDefault {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+
+  &:hover {
+    background-color: var(--color-primary-dark);
+    box-shadow: theme.$shadow-button-hover;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.variantSecondary {
+  background-color: var(--muted);
+  color: var(--color-text-primary);
+
+  &:hover {
+    background-color: var(--color-border);
+  }
+}
+
+.variantOutline {
+  border-color: var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text-body);
+
+  &:hover {
+    background-color: var(--muted);
+    border-color: var(--color-text-muted);
+  }
+}
+
+.variantGhost {
+  background-color: transparent;
+  color: var(--color-text-body);
+
+  &:hover {
+    background-color: var(--color-primary-subtle-bg);
+    color: var(--color-primary);
+  }
+}
+
+.variantDestructive {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.sizeSm {
+  height: 2rem;
+  padding: 0 theme.$space-3;
+  font-size: theme.$font-size-xs;
+  border-radius: theme.$radius-sm;
+}
+
+.sizeMd {
+  height: 2.5rem;
+  padding: 0 theme.$space-4;
+}
+
+.sizeLg {
+  height: 3rem;
+  padding: 0 theme.$space-6;
+  font-size: theme.$font-size-base;
+}
+
+.sizeIcon {
+  height: 2.5rem;
+  width: 2.5rem;
+  padding: 0;
+}

@@ -1,0 +1,26 @@
+@use '@/styles/theme' as theme;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-6;
+}
+
+.title {
+  font-size: theme.$font-size-2xl;
+  font-weight: theme.$font-weight-extrabold;
+  color: var(--color-text-primary);
+}
+
+.emptyCard {
+  border-radius: theme.$radius-xl;
+  border: 1px dashed var(--color-border);
+  background-color: var(--color-surface);
+  padding: theme.$space-12 theme.$space-6;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: theme.$space-3;
+  color: var(--color-text-muted);
+}

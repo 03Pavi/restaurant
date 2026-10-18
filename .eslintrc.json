@@ -1,0 +1,60 @@
+{
+  "extends": ["next/core-web-vitals"],
+  "rules": {
+    "react/forbid-dom-props": [
+      "error",
+      {
+        "forbid": ["style"]
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "JSXAttribute[name.name='style']",
+        "message": "Inline styles are strictly forbidden. SCSS modules and styles/theme.scss are the ONLY styling mechanism."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "src/app/(customer)/**/*",
+        "src/components/customer/**/*",
+        "src/lib/customer/**/*"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/components/admin/**", "@/components/admin/**"],
+                "message": "Customer app cannot import admin components."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": [
+        "src/app/(admin)/**/*",
+        "src/components/admin/**/*",
+        "src/lib/admin/**/*"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/components/customer/**", "@/components/customer/**"],
+                "message": "Admin app cannot import customer components."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

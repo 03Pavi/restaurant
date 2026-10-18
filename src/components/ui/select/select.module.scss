@@ -1,0 +1,81 @@
+@use '@/styles/theme' as theme;
+
+.trigger {
+  display: flex;
+  height: 2.5rem;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: theme.$radius-md;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: theme.$space-2 theme.$space-3;
+  font-size: theme.$font-size-sm;
+  color: var(--color-text-primary);
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  &:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary-subtle-bg);
+  }
+}
+
+.content {
+  position: relative;
+  z-index: theme.$z-dropdown;
+  min-width: 8rem;
+  overflow: hidden;
+  border-radius: theme.$radius-lg;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  box-shadow: theme.$shadow-popover;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.viewport {
+  padding: theme.$space-1;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  user-select: none;
+  align-items: center;
+  border-radius: theme.$radius-sm;
+  padding: theme.$space-2 theme.$space-6 theme.$space-2 theme.$space-2;
+  font-size: theme.$font-size-sm;
+  outline: none;
+  transition: background-color 0.15s;
+
+  &:hover,
+  &[data-highlighted] {
+    background-color: var(--color-primary-subtle-bg);
+    color: var(--color-primary);
+  }
+
+  &[data-state="checked"] {
+    font-weight: theme.$font-weight-semibold;
+  }
+}
+
+.itemIndicator {
+  position: absolute;
+  right: theme.$space-2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

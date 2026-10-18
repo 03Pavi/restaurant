@@ -1,0 +1,157 @@
+@use "@/styles/theme" as theme;
+
+.heroSection {
+  width: 100%;
+  margin-bottom: theme.$space-8;
+}
+
+.banner {
+  position: relative;
+  width: 100%;
+  border-radius: 28px;
+  background-color: #FEFAF1;
+  background-image: radial-gradient(circle at 100% 0%, rgba(245, 158, 11, 0.05) 0%, transparent 40%),
+                    radial-gradient(circle at 0% 100%, rgba(234, 88, 12, 0.04) 0%, transparent 40%);
+  border: 1px solid #F2EADA;
+  padding: 38px 44px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.03);
+
+  @media (max-width: 1024px) {
+    padding: 30px 28px;
+  }
+
+  @media (max-width: theme.$breakpoint-md) {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 720px;
+  z-index: 1;
+}
+
+.headingGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.headingPrimary {
+  margin: 0;
+  font-size: clamp(1.85rem, 2.8vw, 2.6rem);
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.headingSecondary {
+  display: block;
+  font-size: clamp(1.85rem, 2.8vw, 2.6rem);
+  font-weight: 800;
+  color: #E85D04;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-top: 2px;
+}
+
+.subtitle {
+  margin: 16px 0 28px 0;
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.55;
+  max-width: 580px;
+
+  @media (max-width: theme.$breakpoint-md) {
+    margin: 12px 0 20px 0;
+    font-size: theme.$font-size-sm;
+  }
+}
+
+.featuresRow {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  width: 100%;
+  max-width: 600px;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+.featureCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background-color: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 12px 18px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  flex: 1;
+  min-width: 0;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  }
+}
+
+.featureCardActive {
+  border: 1.5px solid #EA580C;
+  box-shadow: 0 3px 10px rgba(234, 88, 12, 0.08);
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(234, 88, 12, 0.14);
+  }
+}
+
+.featureIconBox {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iconOrange {
+  background-color: #EA580C;
+  color: #FFFFFF;
+}
+
+.iconDark {
+  background-color: #0F172A;
+  color: #F59E0B;
+}
+
+.featureTextBox {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.featureTitle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0F172A;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.featureSubtitle {
+  font-size: 11.5px;
+  color: #64748B;
+  margin-top: 2px;
+  line-height: 1.25;
+}

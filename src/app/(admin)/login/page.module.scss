@@ -1,0 +1,88 @@
+@use '@/styles/theme' as theme;
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background);
+  padding: theme.$space-4;
+}
+
+.card {
+  width: 100%;
+  max-width: 26rem;
+  border-radius: theme.$radius-2xl;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  padding: theme.$space-8;
+  box-shadow: theme.$shadow-card-resting;
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-6;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: theme.$space-2;
+}
+
+.brandIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: theme.$radius-lg;
+  background-color: var(--color-primary-subtle-bg);
+  color: var(--color-primary);
+}
+
+.title {
+  font-size: theme.$font-size-2xl;
+  font-weight: theme.$font-weight-extrabold;
+  color: var(--color-text-primary);
+  letter-spacing: theme.$letter-spacing-heading;
+}
+
+.subtitle {
+  font-size: theme.$font-size-sm;
+  color: var(--color-text-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-4;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-2;
+}
+
+.label {
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-semibold;
+  color: var(--color-text-body);
+}
+
+.errorMessage {
+  padding: theme.$space-3 theme.$space-4;
+  border-radius: theme.$radius-md;
+  background-color: #FFF1F2;
+  border: 1px solid #FECDD3;
+  color: var(--destructive);
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-medium;
+}
+
+.footer {
+  text-align: center;
+  font-size: theme.$font-size-xs;
+  color: var(--color-text-muted);
+}

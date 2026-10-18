@@ -1,0 +1,29 @@
+@use '@/styles/theme' as theme;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-4;
+  margin-top: theme.$space-2;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-2;
+}
+
+.label {
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-semibold;
+  color: var(--color-text-body);
+}
+
+.errorMessage {
+  padding: theme.$space-2 theme.$space-3;
+  border-radius: theme.$radius-sm;
+  background-color: #FFF1F2;
+  border: 1px solid #FECDD3;
+  color: var(--destructive);
+  font-size: theme.$font-size-xs;
+}

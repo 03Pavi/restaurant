@@ -1,9 +1,56 @@
-:root {
-  --global-color-secondary: #000000;
-  --global-color-primary: #FFFFFF;
+// =============================================================================
+// GLOBAL STYLES & RESETS
+// Imports theme + base resets ONLY. No token definitions live outside theme.scss.
+// =============================================================================
+@use '@/styles/theme' as theme;
+
+// Emit CSS custom properties and shadcn root aliases defined in theme.scss
+@include theme.root-tokens;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-* {
-  padding: 0;
-  margin: 0;
+html,
+body {
+  height: 100%;
+  font-family: theme.$font-family-base;
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
 }

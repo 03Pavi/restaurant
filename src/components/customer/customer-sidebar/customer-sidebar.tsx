@@ -12,6 +12,7 @@ import {
   LogOut,
   LogIn,
   ShoppingBag,
+  Loader2,
 } from "lucide-react";
 import { useSessionQuery } from "@/lib/auth/use-session-query";
 import { useSignOutMutation } from "@/lib/auth/use-sign-out-mutation";
@@ -91,11 +92,15 @@ export const CustomerSidebar: FC = () => {
               type="button"
               onClick={() => signOutMutation.mutate()}
               disabled={signOutMutation.isPending}
-              className={styles.actionButton}
-              title="Sign Out"
+              className={`${styles.actionButton} ${signOutMutation.isPending ? styles.actionButtonLoading : ""}`}
+              title={signOutMutation.isPending ? "Signing out..." : "Sign Out"}
               aria-label="Sign Out"
             >
-              <LogOut size={16} />
+              {signOutMutation.isPending ? (
+                <Loader2 size={16} className={styles.spinIcon} />
+              ) : (
+                <LogOut size={16} />
+              )}
             </button>
           </div>
         ) : (

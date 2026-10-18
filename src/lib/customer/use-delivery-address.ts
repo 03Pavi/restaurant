@@ -85,13 +85,18 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
         if (loaded.length === 0) {
           try {
             const addressesRef = collection(db, "users", userId, "addresses");
-            const snapshot = await getDocs(addressesRef);
+            const snapshot = await Promise.race([
+              getDocs(addressesRef),
+              new Promise<null>((_, reject) => setTimeout(() => reject(new Error("Firestore timeout")), 1200)),
+            ]);
 
-            snapshot.forEach((d) => {
-              loaded.push({ id: d.id, ...d.data() } as UserAddress);
-            });
-          } catch (fbErr) {
-            console.warn("Firestore addresses check skipped:", fbErr);
+            if (snapshot) {
+              snapshot.forEach((d) => {
+                loaded.push({ id: d.id, ...d.data() } as UserAddress);
+              });
+            }
+          } catch {
+            // Firestore check skipped or timed out
           }
         }
 
@@ -130,13 +135,17 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
 
         updatedList.push(newAddress);
 
+        // 1. Instant optimistic update in local state
         set({
           addresses: updatedList,
           selectedAddressId: newId,
         });
 
-        // 1. Save to Supabase API
+        // 2. Fast Supabase save
         try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3500);
+
           await fetch("/api/user/addresses", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -144,38 +153,40 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
               ...newAddress,
               userId,
             }),
+            signal: controller.signal,
           });
+          clearTimeout(timeoutId);
         } catch (apiErr) {
-          console.warn("Supabase address save error:", apiErr);
+          console.warn("Supabase address save notice:", apiErr);
         }
 
-        // 2. Save to Firestore collection (both subcollection and root addresses collection)
+        // 3. Non-blocking Firestore sync
         if (userId) {
-          try {
-            // A. users/{userId}/addresses/{newId}
-            const addrDocRef = doc(db, "users", userId, "addresses", newId);
-            await setDoc(addrDocRef, newAddress);
-
-            // B. addresses/{newId} (root collection with userId link)
+          (async () => {
             try {
-              const rootDocRef = doc(db, "addresses", newId);
-              await setDoc(rootDocRef, newAddress);
-            } catch (rootErr) {
-              // optional root sync
-            }
+              const addrDocRef = doc(db, "users", userId, "addresses", newId);
+              await setDoc(addrDocRef, newAddress);
 
-            if (addressData.isDefault) {
-              for (const a of currentAddresses) {
-                if (a.isDefault) {
-                  await updateDoc(doc(db, "users", userId, "addresses", a.id), {
-                    isDefault: false,
-                  });
+              try {
+                const rootDocRef = doc(db, "addresses", newId);
+                await setDoc(rootDocRef, newAddress);
+              } catch {
+                // optional root sync
+              }
+
+              if (addressData.isDefault) {
+                for (const a of currentAddresses) {
+                  if (a.isDefault) {
+                    await updateDoc(doc(db, "users", userId, "addresses", a.id), {
+                      isDefault: false,
+                    });
+                  }
                 }
               }
+            } catch (err) {
+              console.warn("Firestore address save skipped:", err);
             }
-          } catch (err) {
-            console.warn("Firestore address save skipped:", err);
-          }
+          })();
         }
 
         return newAddress;
@@ -192,10 +203,14 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
           return a;
         });
 
+        // 1. Instant local update
         set({ addresses: currentList });
 
-        // 1. Update in Supabase
+        // 2. Fast Supabase update
         try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3500);
+
           await fetch("/api/user/addresses", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -203,29 +218,33 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
               ...updatedAddress,
               userId,
             }),
+            signal: controller.signal,
           });
+          clearTimeout(timeoutId);
         } catch (apiErr) {
-          console.warn("Supabase address update error:", apiErr);
+          console.warn("Supabase address update notice:", apiErr);
         }
 
-        // 2. Update in Firestore
+        // 3. Non-blocking Firestore update
         if (userId) {
-          try {
-            const addrDocRef = doc(db, "users", userId, "addresses", updatedAddress.id);
-            await setDoc(addrDocRef, updatedAddress, { merge: true });
+          (async () => {
+            try {
+              const addrDocRef = doc(db, "users", userId, "addresses", updatedAddress.id);
+              await setDoc(addrDocRef, updatedAddress, { merge: true });
 
-            if (updatedAddress.isDefault) {
-              for (const a of get().addresses) {
-                if (a.id !== updatedAddress.id && a.isDefault) {
-                  await updateDoc(doc(db, "users", userId, "addresses", a.id), {
-                    isDefault: false,
-                  });
+              if (updatedAddress.isDefault) {
+                for (const a of get().addresses) {
+                  if (a.id !== updatedAddress.id && a.isDefault) {
+                    await updateDoc(doc(db, "users", userId, "addresses", a.id), {
+                      isDefault: false,
+                    });
+                  }
                 }
               }
+            } catch (err) {
+              console.warn("Firestore address update skipped:", err);
             }
-          } catch (err) {
-            console.warn("Firestore address update skipped:", err);
-          }
+          })();
         }
       },
 
@@ -236,27 +255,35 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
             ? remaining[0]?.id || null
             : get().selectedAddressId;
 
+        // 1. Instant local delete
         set({
           addresses: remaining,
           selectedAddressId: nextSelected,
         });
 
-        // 1. Delete in Supabase
+        // 2. Fast Supabase delete
         try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3500);
+
           await fetch(`/api/user/addresses?id=${encodeURIComponent(addressId)}`, {
             method: "DELETE",
+            signal: controller.signal,
           });
+          clearTimeout(timeoutId);
         } catch (apiErr) {
-          console.warn("Supabase address delete error:", apiErr);
+          console.warn("Supabase address delete notice:", apiErr);
         }
 
-        // 2. Delete in Firestore
+        // 3. Non-blocking Firestore delete
         if (userId) {
-          try {
-            await deleteDoc(doc(db, "users", userId, "addresses", addressId));
-          } catch (err) {
-            console.warn("Firestore address delete skipped:", err);
-          }
+          (async () => {
+            try {
+              await deleteDoc(doc(db, "users", userId, "addresses", addressId));
+            } catch (err) {
+              console.warn("Firestore address delete skipped:", err);
+            }
+          })();
         }
       },
     }),

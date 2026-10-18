@@ -86,21 +86,40 @@ const ProfilePage: FC = () => {
 
     setName(user.name || "");
 
-    const fetchFirestoreProfile = async () => {
+    const fetchUserProfile = async () => {
+      // 1. Fast Supabase profile fetch
+      try {
+        const res = await fetch(`/api/user/profile?userId=${encodeURIComponent(user.id)}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.user) {
+            if (json.user.name) setName(json.user.name);
+            if (json.user.phone) setPhone(json.user.phone);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Supabase profile read notice:", err);
+      }
+
+      // 2. Fallback to Firestore with short timeout so it never hangs
       try {
         const userDocRef = doc(db, "users", user.id);
-        const snap = await getDoc(userDocRef);
-        if (snap.exists()) {
+        const snap = await Promise.race([
+          getDoc(userDocRef),
+          new Promise<null>((_, reject) => setTimeout(() => reject(new Error("Firestore timeout")), 1200)),
+        ]);
+        if (snap && snap.exists()) {
           const data = snap.data();
           if (data.phone) setPhone(data.phone);
           if (data.name) setName(data.name);
         }
-      } catch (err) {
-        console.error("Error reading profile from Firestore:", err);
+      } catch {
+        // Non-blocking fallback
       }
     };
 
-    fetchFirestoreProfile();
+    fetchUserProfile();
     loadAddressesFromFirestore(user.id);
   }, [user?.id, user?.name, loadAddressesFromFirestore]);
 

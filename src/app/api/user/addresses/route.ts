@@ -72,14 +72,6 @@ export async function POST(req: NextRequest) {
 
     const addressId = id || `addr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
-    // If setting default, unset existing default
-    if (isDefault) {
-      await supabase
-        .from("user_addresses")
-        .update({ is_default: false })
-        .eq("user_id", userId);
-    }
-
     const upsertPayload: Record<string, any> = {
       id: addressId,
       user_id: userId,
@@ -98,25 +90,34 @@ export async function POST(req: NextRequest) {
     if (typeof latitude === "number") upsertPayload.latitude = latitude;
     if (typeof longitude === "number") upsertPayload.longitude = longitude;
 
-    let { data, error } = await supabase
-      .from("user_addresses")
-      .upsert(upsertPayload, { onConflict: "id" })
-      .select()
-      .maybeSingle();
+    // Run unset-default and upsert concurrently to minimize latency
+    const unsetPromise = isDefault
+      ? supabase.from("user_addresses").update({ is_default: false }).eq("user_id", userId)
+      : Promise.resolve(null);
 
-    // If latitude or longitude columns are not yet in Supabase schema cache, retry without them
-    if (error && (error.message.includes("latitude") || error.message.includes("longitude"))) {
-      delete upsertPayload.latitude;
-      delete upsertPayload.longitude;
-      const retryResult = await supabase
+    const upsertPromise = (async () => {
+      let res = await supabase
         .from("user_addresses")
         .upsert(upsertPayload, { onConflict: "id" })
         .select()
         .maybeSingle();
 
-      data = retryResult.data;
-      error = retryResult.error;
-    }
+      // If latitude or longitude columns are not yet in Supabase schema cache, retry without them
+      if (res.error && (res.error.message.includes("latitude") || res.error.message.includes("longitude"))) {
+        delete upsertPayload.latitude;
+        delete upsertPayload.longitude;
+        res = await supabase
+          .from("user_addresses")
+          .upsert(upsertPayload, { onConflict: "id" })
+          .select()
+          .maybeSingle();
+      }
+
+      return res;
+    })();
+
+    const [, upsertResult] = await Promise.all([unsetPromise, upsertPromise]);
+    let { data, error } = upsertResult;
 
     if (error) {
       console.warn("Supabase user_addresses save notice:", error.message);

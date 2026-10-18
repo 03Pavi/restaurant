@@ -36,14 +36,12 @@ export default function LoginPage() {
       }
 
       const isOwner = user.email.toLowerCase() === "03pavitar.dev@gmail.com";
+      const role = isOwner ? "RESTAURANT_OWNER" : "CUSTOMER";
+      const displayName = user.displayName || user.email.split("@")[0];
 
-      let effectiveUserId = user.uid;
-      let role = isOwner ? "RESTAURANT_OWNER" : "CUSTOMER";
-      let displayName = user.displayName || user.email.split("@")[0];
-
-      // 1. Save or sync user in Supabase "users" table (reuses existing user)
-      try {
-        const profileRes = await fetch("/api/user/profile", {
+      // 1. Establish session cookie and sync user profile concurrently (fast parallel requests)
+      const [sessionRes] = await Promise.all([
+        fetch("/api/auth/session-cookie", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -53,76 +51,51 @@ export default function LoginPage() {
             role,
             photoURL: user.photoURL,
           }),
-        });
-
-        if (profileRes.ok) {
-          const profileData = await profileRes.json();
-          if (profileData?.user?.id) {
-            effectiveUserId = profileData.user.id;
-          }
-          if (profileData?.user?.role) {
-            role = profileData.user.role;
-          }
-          if (profileData?.user?.name) {
-            displayName = profileData.user.name;
-          }
-        }
-      } catch (err) {
-        console.warn("Supabase user sync error:", err);
-      }
-
-      // 2. Also sync to Firestore "users" collection if Firestore is enabled
-      try {
-        const userRef = doc(db, "users", effectiveUserId);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists() && userSnap.data()?.role) {
-          role = userSnap.data().role;
-        }
-
-        await setDoc(
-          userRef,
-          {
-            uid: effectiveUserId,
+        }),
+        fetch("/api/user/profile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: user.uid,
             email: user.email,
             name: displayName,
-            photoURL: user.photoURL,
             role,
-            updatedAt: serverTimestamp(),
-            ...(userSnap.exists() ? {} : { createdAt: serverTimestamp() }),
-          },
-          { merge: true }
-        );
-      } catch (fbErr) {
-        console.warn("Firestore collection sync skipped:", fbErr);
-      }
-
-      // Establish session cookie for Next.js server & client (reusing existing user ID)
-      const res = await fetch("/api/auth/session-cookie", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: effectiveUserId,
-          email: user.email,
-          name: displayName,
-          role,
-          photoURL: user.photoURL,
+            photoURL: user.photoURL,
+          }),
+        }).catch((err) => {
+          console.warn("Background profile sync:", err);
+          return null;
         }),
-      });
+      ]);
 
-      if (!res.ok) {
+      if (!sessionRes.ok) {
         throw new Error("Failed to set session cookie.");
       }
 
-      await queryClient.invalidateQueries({ queryKey: ["session"] });
-      router.refresh();
+      // 2. Non-blocking Firestore sync in background (never blocks user login)
+      (async () => {
+        try {
+          const userRef = doc(db, "users", user.uid);
+          await setDoc(
+            userRef,
+            {
+              uid: user.uid,
+              email: user.email,
+              name: displayName,
+              photoURL: user.photoURL,
+              role,
+              updatedAt: serverTimestamp(),
+            },
+            { merge: true }
+          );
+        } catch {
+          // Firestore sync is optional and never blocks login
+        }
+      })();
 
-      // Redirect restaurant owner to admin studio, customers to profile or home
-      if (role === "RESTAURANT_OWNER") {
-        router.push("/admin/menu");
-      } else {
-        router.push("/profile");
-      }
+      // 3. Update query cache and immediately navigate to destination
+      await queryClient.invalidateQueries({ queryKey: ["session"] });
+      router.replace(role === "RESTAURANT_OWNER" ? "/admin/menu" : "/profile");
     } catch (err: unknown) {
       console.error("Google sign-in error:", err);
       const message = err instanceof Error ? err.message : "Failed to sign in with Google.";

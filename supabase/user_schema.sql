@@ -57,3 +57,8 @@ VALUES
   ('owner_admin', 'Restaurant Owner', '03pavitar.dev@gmail.com', 'RESTAURANT_OWNER')
 ON CONFLICT (id) DO UPDATE 
 SET role = 'RESTAURANT_OWNER', updated_at = NOW();
+
+-- 6. In case table already exists, safely add latitude and longitude columns:
+ALTER TABLE IF EXISTS public.user_addresses 
+ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION,
+ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;

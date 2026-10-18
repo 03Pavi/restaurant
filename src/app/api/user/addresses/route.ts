@@ -80,36 +80,51 @@ export async function POST(req: NextRequest) {
         .eq("user_id", userId);
     }
 
-    const { data, error } = await supabase
+    const upsertPayload: Record<string, any> = {
+      id: addressId,
+      user_id: userId,
+      label: label || "Home",
+      receiver_name: receiverName,
+      phone: phone || null,
+      street,
+      apartment: apartment || null,
+      city,
+      postal_code: postalCode || null,
+      delivery_notes: deliveryNotes || null,
+      is_default: Boolean(isDefault),
+      updated_at: new Date().toISOString(),
+    };
+
+    if (typeof latitude === "number") upsertPayload.latitude = latitude;
+    if (typeof longitude === "number") upsertPayload.longitude = longitude;
+
+    let { data, error } = await supabase
       .from("user_addresses")
-      .upsert(
-        {
-          id: addressId,
-          user_id: userId,
-          label: label || "Home",
-          receiver_name: receiverName,
-          phone: phone || null,
-          street,
-          apartment: apartment || null,
-          city,
-          postal_code: postalCode || null,
-          delivery_notes: deliveryNotes || null,
-          latitude: typeof latitude === "number" ? latitude : null,
-          longitude: typeof longitude === "number" ? longitude : null,
-          is_default: Boolean(isDefault),
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "id" }
-      )
+      .upsert(upsertPayload, { onConflict: "id" })
       .select()
       .maybeSingle();
 
+    // If latitude or longitude columns are not yet in Supabase schema cache, retry without them
+    if (error && (error.message.includes("latitude") || error.message.includes("longitude"))) {
+      delete upsertPayload.latitude;
+      delete upsertPayload.longitude;
+      const retryResult = await supabase
+        .from("user_addresses")
+        .upsert(upsertPayload, { onConflict: "id" })
+        .select()
+        .maybeSingle();
+
+      data = retryResult.data;
+      error = retryResult.error;
+    }
+
     if (error) {
-      console.warn("Supabase user_addresses error (table might need creation):", error.message);
+      console.warn("Supabase user_addresses save notice:", error.message);
       return NextResponse.json({
         success: true,
         address: {
           id: addressId,
+          userId,
           label,
           receiverName,
           phone,

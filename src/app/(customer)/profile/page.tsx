@@ -70,6 +70,7 @@ const ProfilePage: FC = () => {
   const [modalCoords, setModalCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [locationStatusMsg, setLocationStatusMsg] = useState("");
+  const [isSavingAddress, setIsSavingAddress] = useState(false);
   const [modalError, setModalError] = useState("");
 
   // Redirect if not authenticated
@@ -332,6 +333,9 @@ const ProfilePage: FC = () => {
     }
     if (!user?.id) return;
 
+    setIsSavingAddress(true);
+    setModalError("");
+
     try {
       if (editingAddressId) {
         const existing = addresses.find((a) => a.id === editingAddressId);
@@ -371,6 +375,8 @@ const ProfilePage: FC = () => {
     } catch (err) {
       console.error("Error saving address:", err);
       setModalError("Failed to save address. Please try again.");
+    } finally {
+      setIsSavingAddress(false);
     }
   };
 
@@ -884,13 +890,25 @@ const ProfilePage: FC = () => {
               <div className={styles.modalActions}>
                 <button
                   type="button"
+                  disabled={isSavingAddress}
                   onClick={() => setIsModalOpen(false)}
                   className={styles.cancelBtn}
                 >
                   Cancel
                 </button>
-                <button type="submit" className={styles.submitModalBtn}>
-                  {editingAddressId ? "Save Changes" : "Add Address"}
+                <button
+                  type="submit"
+                  disabled={isSavingAddress}
+                  className={styles.submitModalBtn}
+                >
+                  {isSavingAddress ? (
+                    <>
+                      <Loader2 size={15} className={styles.spinIcon} />
+                      <span>{editingAddressId ? "Saving Changes..." : "Adding Address..."}</span>
+                    </>
+                  ) : (
+                    <span>{editingAddressId ? "Save Changes" : "Add Address"}</span>
+                  )}
                 </button>
               </div>
             </form>

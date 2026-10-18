@@ -14,6 +14,7 @@ import { db } from "@/lib/firebase/client";
 
 export interface UserAddress {
   id: string;
+  userId?: string;
   label: "Home" | "Work" | "Other" | string;
   receiverName: string;
   phone: string;
@@ -118,6 +119,7 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
         const newAddress: UserAddress = {
           ...addressData,
           id: newId,
+          userId,
           createdAt: now,
         };
 
@@ -147,11 +149,20 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
           console.warn("Supabase address save error:", apiErr);
         }
 
-        // 2. Save to Firestore collection
+        // 2. Save to Firestore collection (both subcollection and root addresses collection)
         if (userId) {
           try {
+            // A. users/{userId}/addresses/{newId}
             const addrDocRef = doc(db, "users", userId, "addresses", newId);
             await setDoc(addrDocRef, newAddress);
+
+            // B. addresses/{newId} (root collection with userId link)
+            try {
+              const rootDocRef = doc(db, "addresses", newId);
+              await setDoc(rootDocRef, newAddress);
+            } catch (rootErr) {
+              // optional root sync
+            }
 
             if (addressData.isDefault) {
               for (const a of currentAddresses) {

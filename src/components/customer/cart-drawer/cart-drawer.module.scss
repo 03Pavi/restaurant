@@ -222,6 +222,9 @@
 }
 
 .unavailableAlert {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   background-color: rgba(220, 38, 38, 0.1);
   border: 1px solid rgba(220, 38, 38, 0.3);
   color: #DC2626;

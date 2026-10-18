@@ -5,21 +5,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-background);
+  background-color: theme.$color-background;
   padding: theme.$space-4;
 }
 
 .card {
   width: 100%;
-  max-width: 26rem;
+  max-width: 27rem;
   border-radius: theme.$radius-2xl;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
+  border: 1px solid theme.$color-border;
+  background-color: theme.$color-surface;
   padding: theme.$space-8;
-  box-shadow: theme.$shadow-card-resting;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
   display: flex;
   flex-direction: column;
-  gap: theme.$space-6;
+  gap: theme.$space-5;
+
+  @media (max-width: 480px) {
+    padding: theme.$space-6 theme.$space-4;
+  }
 }
 
 .brand {
@@ -34,23 +38,84 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  border-radius: theme.$radius-lg;
-  background-color: var(--color-primary-subtle-bg);
-  color: var(--color-primary);
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: theme.$radius-xl;
+  background-color: theme.$color-primary-subtle-bg;
+  color: theme.$color-primary;
 }
 
 .title {
-  font-size: theme.$font-size-2xl;
+  margin: 0;
+  font-size: 1.5rem;
   font-weight: theme.$font-weight-extrabold;
-  color: var(--color-text-primary);
-  letter-spacing: theme.$letter-spacing-heading;
+  color: theme.$color-text-primary;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
+  margin: 0;
   font-size: theme.$font-size-sm;
-  color: var(--color-text-muted);
+  color: theme.$color-text-muted;
+  line-height: 1.5;
+}
+
+.googleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 18px;
+  background-color: #FFFFFF;
+  color: #1F2937;
+  border: 1.5px solid #E5E7EB;
+  border-radius: theme.$radius-xl;
+  font-size: 14.5px;
+  font-weight: theme.$font-weight-bold;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &:hover:not(:disabled) {
+    background-color: #F9FAFB;
+    border-color: #D1D5DB;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+.googleIcon {
+  flex-shrink: 0;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2px 0;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background-color: theme.$color-border;
+}
+
+.dividerText {
+  font-size: 12px;
+  font-weight: theme.$font-weight-medium;
+  color: theme.$color-text-muted;
+  text-transform: lowercase;
 }
 
 .form {
@@ -62,27 +127,73 @@
 .field {
   display: flex;
   flex-direction: column;
-  gap: theme.$space-2;
+  gap: 6px;
 }
 
 .label {
   font-size: theme.$font-size-xs;
   font-weight: theme.$font-weight-semibold;
-  color: var(--color-text-body);
+  color: theme.$color-text-body;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 12px;
+  color: theme.$color-text-muted;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.inputWithIcon {
+  padding-left: 38px !important;
+  height: 42px !important;
+  border-radius: theme.$radius-lg !important;
+}
+
+.submitButton {
+  margin-top: 4px;
+  height: 44px;
+  border-radius: theme.$radius-xl;
+  font-weight: theme.$font-weight-bold;
+  background-color: theme.$color-primary;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: theme.$color-primary-dark;
+    box-shadow: 0 4px 14px rgba(232, 93, 4, 0.3);
+  }
 }
 
 .errorMessage {
-  padding: theme.$space-3 theme.$space-4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
   border-radius: theme.$radius-md;
-  background-color: #FFF1F2;
-  border: 1px solid #FECDD3;
-  color: var(--destructive);
+  background-color: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #DC2626;
   font-size: theme.$font-size-xs;
   font-weight: theme.$font-weight-medium;
+  line-height: 1.4;
 }
 
 .footer {
   text-align: center;
   font-size: theme.$font-size-xs;
-  color: var(--color-text-muted);
+  color: theme.$color-text-muted;
+  padding-top: 4px;
+  border-top: 1px solid theme.$color-divider;
 }

@@ -1,7 +1,9 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { signOut } from "next-auth/react";
+import { signOut as nextAuthSignOut } from "next-auth/react";
+import { signOut as firebaseSignOut } from "firebase/auth";
+import { auth as fbAuth } from "@/lib/firebase/client";
 import { useRouter } from "next/navigation";
 
 export function useSignOutMutation() {
@@ -10,7 +12,23 @@ export function useSignOutMutation() {
 
   return useMutation({
     mutationFn: async () => {
-      await signOut({ redirect: false });
+      try {
+        await firebaseSignOut(fbAuth);
+      } catch (err) {
+        // Safe to ignore if not signed in with Firebase
+      }
+
+      try {
+        await nextAuthSignOut({ redirect: false });
+      } catch (err) {
+        // Safe to ignore if not signed in with NextAuth
+      }
+
+      try {
+        await fetch("/api/auth/session-cookie", { method: "DELETE" });
+      } catch (err) {
+        console.error("Failed to delete session cookie:", err);
+      }
     },
     onSuccess: async () => {
       queryClient.setQueryData(["session"], {

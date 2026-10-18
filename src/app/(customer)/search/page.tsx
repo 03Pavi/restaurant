@@ -81,9 +81,9 @@ const SearchPage: FC = () => {
     <div className={styles.page}>
       {/* Header */}
       <header className={styles.header}>
-        <h1 className={styles.title}>Search Food &amp; Restaurants</h1>
+        <h1 className={styles.title}>Search Food</h1>
         <p className={styles.subtitle}>
-          Find your favorite cravings, kitchens, and local dishes instantly
+          Find your favorite cravings and homemade dishes instantly
         </p>
       </header>
 
@@ -97,7 +97,7 @@ const SearchPage: FC = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           autoFocus
-          aria-label="Search food and restaurants"
+          aria-label="Search"
         />
         {query && (
           <button

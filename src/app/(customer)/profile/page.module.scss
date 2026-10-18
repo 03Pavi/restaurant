@@ -1,0 +1,702 @@
+@use "@/styles/theme" as theme;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: theme.$space-6;
+  padding-bottom: theme.$space-12;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: theme.$space-4;
+  color: theme.$color-text-muted;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(232, 93, 4, 0.2);
+  border-top-color: theme.$color-primary;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// 1. Profile Header Card
+.profileHeaderCard {
+  background-color: theme.$color-surface;
+  border: 1px solid theme.$color-border;
+  border-radius: theme.$radius-2xl;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: theme.$space-4;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+
+  @media (max-width: theme.$breakpoint-md) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px 18px;
+    gap: theme.$space-4;
+  }
+}
+
+.userBanner {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: theme.$radius-full;
+  background: linear-gradient(135deg, theme.$color-primary 0%, #EA580C 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: theme.$font-weight-extrabold;
+  box-shadow: 0 4px 14px rgba(232, 93, 4, 0.25);
+  flex-shrink: 0;
+}
+
+.userMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.userName {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: theme.$font-weight-extrabold;
+  color: theme.$color-text-primary;
+  letter-spacing: -0.02em;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: theme.$color-primary-subtle-bg;
+  color: theme.$color-primary;
+  font-size: 11px;
+  font-weight: theme.$font-weight-bold;
+  padding: 3px 9px;
+  border-radius: theme.$radius-full;
+  text-transform: capitalize;
+}
+
+.contactRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: theme.$font-size-xs;
+  color: theme.$color-text-muted;
+}
+
+.signOutBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FEE2E2;
+  border-radius: theme.$radius-lg;
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #FEE2E2;
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// 2. Generic Section Cards
+.sectionCard {
+  background-color: theme.$color-surface;
+  border: 1px solid theme.$color-border;
+  border-radius: theme.$radius-2xl;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-5;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+
+  @media (max-width: theme.$breakpoint-md) {
+    padding: 20px 16px;
+  }
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: theme.$space-4;
+  flex-wrap: wrap;
+}
+
+.sectionTitleArea {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sectionIconBadge {
+  width: 40px;
+  height: 40px;
+  border-radius: theme.$radius-lg;
+  background-color: theme.$color-primary-subtle-bg;
+  color: theme.$color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-text-primary;
+  letter-spacing: -0.01em;
+}
+
+.sectionSubtitle {
+  margin: 2px 0 0 0;
+  font-size: theme.$font-size-xs;
+  color: theme.$color-text-muted;
+}
+
+.addAddressBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background-color: theme.$color-primary;
+  color: #FFFFFF;
+  border: none;
+  border-radius: theme.$radius-lg;
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(232, 93, 4, 0.2);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: theme.$color-primary-dark;
+    transform: translateY(-1px);
+  }
+}
+
+// Addresses Grid
+.addressesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.emptyAddressState {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  border: 2px dashed theme.$color-border;
+  border-radius: theme.$radius-xl;
+  text-align: center;
+  gap: 8px;
+}
+
+.emptyPinIcon {
+  color: theme.$color-text-muted;
+  opacity: 0.6;
+}
+
+.emptyTitle {
+  margin: 4px 0 0 0;
+  font-size: theme.$font-size-base;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-text-primary;
+}
+
+.emptyDesc {
+  margin: 0;
+  font-size: theme.$font-size-xs;
+  color: theme.$color-text-muted;
+  max-width: 380px;
+  line-height: 1.45;
+}
+
+.primaryAddBtn {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background-color: theme.$color-primary;
+  color: #FFFFFF;
+  border: none;
+  border-radius: theme.$radius-lg;
+  font-size: theme.$font-size-sm;
+  font-weight: theme.$font-weight-bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: theme.$color-primary-dark;
+    box-shadow: 0 4px 12px rgba(232, 93, 4, 0.25);
+  }
+}
+
+.addressCard {
+  position: relative;
+  border: 1.5px solid theme.$color-border;
+  border-radius: theme.$radius-xl;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  background-color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: rgba(232, 93, 4, 0.4);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  }
+}
+
+.addressCardSelected {
+  border-color: theme.$color-primary;
+  background-color: #FFFDF9;
+  box-shadow: 0 4px 18px rgba(232, 93, 4, 0.12);
+}
+
+.addressCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.addressTagRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.labelBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  background-color: #F1F5F9;
+  color: theme.$color-text-primary;
+  border-radius: theme.$radius-full;
+  font-size: 11px;
+  font-weight: theme.$font-weight-bold;
+}
+
+.defaultBadge {
+  font-size: 10px;
+  font-weight: theme.$font-weight-bold;
+  color: #16A34A;
+  background-color: #DCFCE7;
+  padding: 2px 7px;
+  border-radius: theme.$radius-full;
+  text-transform: uppercase;
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.iconActionBtn {
+  background: none;
+  border: none;
+  color: theme.$color-text-muted;
+  padding: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #F1F5F9;
+    color: theme.$color-text-primary;
+  }
+}
+
+.deleteActionBtn:hover {
+  background-color: #FEE2E2;
+  color: #DC2626;
+}
+
+.addressBody {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.receiverInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-text-primary;
+}
+
+.receiverPhone {
+  color: theme.$color-text-muted;
+  font-weight: theme.$font-weight-regular;
+  font-size: 12px;
+}
+
+.streetLine {
+  margin: 3px 0 0 0;
+  font-size: 12.5px;
+  color: theme.$color-text-body;
+  line-height: 1.4;
+}
+
+.cityLine {
+  margin: 0;
+  font-size: 12px;
+  color: theme.$color-text-muted;
+}
+
+.notesLine {
+  margin: 4px 0 0 0;
+  font-size: 11px;
+  color: #EA580C;
+  font-style: italic;
+}
+
+.addressCardFooter {
+  padding-top: 10px;
+  border-top: 1px solid theme.$color-divider;
+}
+
+.selectedStatus {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #16A34A;
+  font-size: 12px;
+  font-weight: theme.$font-weight-bold;
+}
+
+.selectBtn {
+  width: 100%;
+  padding: 7px 12px;
+  background-color: #F8FAFC;
+  color: theme.$color-text-body;
+  border: 1px solid theme.$color-border;
+  border-radius: theme.$radius-md;
+  font-size: 12px;
+  font-weight: theme.$font-weight-semibold;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: theme.$color-primary-subtle-bg;
+    color: theme.$color-primary;
+    border-color: theme.$color-primary;
+  }
+}
+
+// 3. Profile Form
+.successBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background-color: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #BBF7D0;
+  border-radius: theme.$radius-lg;
+  font-size: theme.$font-size-xs;
+  font-weight: theme.$font-weight-semibold;
+}
+
+.profileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 600px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+
+  @media (max-width: 580px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 12px;
+  font-weight: theme.$font-weight-semibold;
+  color: theme.$color-text-body;
+}
+
+.fieldInput {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1.5px solid theme.$color-border;
+  border-radius: theme.$radius-lg;
+  font-size: 13.5px;
+  color: theme.$color-text-primary;
+  background-color: #FFFFFF;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    border-color: theme.$color-primary;
+    box-shadow: 0 0 0 3px rgba(232, 93, 4, 0.15);
+  }
+}
+
+.disabledInput {
+  background-color: #F8FAFC;
+  color: theme.$color-text-muted;
+  cursor: not-allowed;
+}
+
+.fieldHelp {
+  font-size: 11px;
+  color: theme.$color-text-muted;
+}
+
+.saveProfileBtn {
+  align-self: flex-start;
+  padding: 10px 22px;
+  background-color: theme.$color-primary;
+  color: #FFFFFF;
+  border: none;
+  border-radius: theme.$radius-lg;
+  font-size: 13px;
+  font-weight: theme.$font-weight-bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: theme.$color-primary-dark;
+    box-shadow: 0 4px 14px rgba(232, 93, 4, 0.25);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// 4. Modal
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: theme.$z-modal;
+  background-color: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modalContent {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: #FFFFFF;
+  border-radius: theme.$radius-2xl;
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.25);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid theme.$color-divider;
+  padding-bottom: 14px;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: theme.$font-weight-extrabold;
+  color: theme.$color-text-primary;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: theme.$color-text-muted;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: theme.$radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    color: theme.$color-text-primary;
+    background-color: #F1F5F9;
+  }
+}
+
+.modalErrorBanner {
+  padding: 8px 12px;
+  border-radius: theme.$radius-md;
+  background-color: #FEF2F2;
+  color: #DC2626;
+  font-size: 12px;
+  border: 1px solid #FECACA;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.labelChips {
+  display: flex;
+  gap: 8px;
+}
+
+.chipBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid theme.$color-border;
+  background-color: #FFFFFF;
+  border-radius: theme.$radius-full;
+  font-size: 12px;
+  font-weight: theme.$font-weight-semibold;
+  color: theme.$color-text-body;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: theme.$color-primary;
+    color: theme.$color-primary;
+  }
+}
+
+.chipBtnActive {
+  background-color: theme.$color-primary-subtle-bg !important;
+  color: theme.$color-primary !important;
+  border-color: theme.$color-primary !important;
+  font-weight: theme.$font-weight-bold;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: theme.$color-text-body;
+  cursor: pointer;
+  user-select: none;
+}
+
+.modalActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+  border-top: 1px solid theme.$color-divider;
+  padding-top: 16px;
+}
+
+.cancelBtn {
+  padding: 9px 18px;
+  background-color: #F8FAFC;
+  color: theme.$color-text-body;
+  border: 1px solid theme.$color-border;
+  border-radius: theme.$radius-lg;
+  font-size: 13px;
+  font-weight: theme.$font-weight-semibold;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #F1F5F9;
+  }
+}
+
+.submitModalBtn {
+  padding: 9px 20px;
+  background-color: theme.$color-primary;
+  color: #FFFFFF;
+  border: none;
+  border-radius: theme.$radius-lg;
+  font-size: 13px;
+  font-weight: theme.$font-weight-bold;
+  cursor: pointer;
+
+  &:hover {
+    background-color: theme.$color-primary-dark;
+  }
+}

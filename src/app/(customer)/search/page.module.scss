@@ -39,13 +39,13 @@
   width: 100%;
   background-color: theme.$color-surface;
   border: 2px solid theme.$color-primary;
-  border-radius: theme.$radius-lg;
-  padding: 12px 16px;
-  box-shadow: 0 4px 14px rgba(232, 93, 4, 0.12);
-  transition: all 0.2s ease;
+  border-radius: theme.$radius-full;
+  padding: 12px 18px;
+  box-shadow: 0 2px 8px rgba(232, 93, 4, 0.08);
+  outline: none;
 
   &:focus-within {
-    box-shadow: 0 0 0 4px rgba(232, 93, 4, 0.2);
+    box-shadow: 0 2px 12px rgba(232, 93, 4, 0.15);
   }
 }
 

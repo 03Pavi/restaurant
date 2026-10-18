@@ -144,7 +144,7 @@ export const CartDrawer: FC = () => {
             <footer className={styles.footer}>
               {hasUnavailableItems && (
                 <div className={styles.unavailableAlert}>
-                  <AlertCircle size={14} style={{ display: "inline", marginRight: 4 }} />
+                  <AlertCircle size={14} />
                   Some items are out of stock and excluded from checkout.
                 </div>
               )}

@@ -184,3 +184,11 @@
     display: flex;
   }
 }
+
+.cartBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  padding: 0 4px;
+  font-size: 10px;
+}

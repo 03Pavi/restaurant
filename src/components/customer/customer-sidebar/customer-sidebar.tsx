@@ -29,12 +29,17 @@ export const CustomerSidebar: FC = () => {
   const userName = sessionData?.user?.name || sessionData?.user?.email?.split("@")[0] || "User";
   const userInitial = userName.charAt(0).toUpperCase();
 
+  // Navigation Items: Orders and Profile only visible when authenticated
   const navItems = [
-    { label: "Home", href: "/", icon: Home, exact: true },
-    { label: "Search", href: "/search", icon: Search, exact: true },
-    { label: "Orders", href: "/orders", icon: ClipboardList },
-    { label: "Profile", href: isAuthenticated ? "/admin/menu" : "/login", icon: User },
+    { label: "Home", href: "/", icon: Home, exact: true, requiresAuth: false },
+    { label: "Search", href: "/search", icon: Search, exact: true, requiresAuth: false },
+    { label: "Orders", href: "/orders", icon: ClipboardList, requiresAuth: true },
+    { label: "Profile", href: "/profile", icon: User, requiresAuth: true },
   ];
+
+  const visibleNavItems = navItems.filter(
+    (item) => !item.requiresAuth || isAuthenticated
+  );
 
   return (
     <>
@@ -49,7 +54,7 @@ export const CustomerSidebar: FC = () => {
           </Link>
 
           <nav className={styles.nav}>
-            {navItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = item.exact
                 ? pathname === item.href
@@ -142,22 +147,24 @@ export const CustomerSidebar: FC = () => {
             <span className={styles.dockLabel}>Cart</span>
           </button>
 
-          {/* Orders */}
-          <Link
-            href="/orders"
-            className={`${styles.dockItem} ${pathname.startsWith("/orders") ? styles.dockItemActive : ""}`}
-          >
-            <div className={styles.dockIconWrapper}>
-              <ClipboardList size={19} />
-            </div>
-            <span className={styles.dockLabel}>Orders</span>
-          </Link>
+          {/* Orders: only when authenticated */}
+          {isAuthenticated && (
+            <Link
+              href="/orders"
+              className={`${styles.dockItem} ${pathname.startsWith("/orders") ? styles.dockItemActive : ""}`}
+            >
+              <div className={styles.dockIconWrapper}>
+                <ClipboardList size={19} />
+              </div>
+              <span className={styles.dockLabel}>Orders</span>
+            </Link>
+          )}
 
           {/* Profile / Log In */}
           <Link
-            href={isAuthenticated ? "/admin/menu" : "/login"}
+            href={isAuthenticated ? "/profile" : "/login"}
             className={`${styles.dockItem} ${
-              pathname.startsWith("/login") || pathname.startsWith("/admin")
+              pathname.startsWith("/login") || pathname.startsWith("/profile")
                 ? styles.dockItemActive
                 : ""
             }`}

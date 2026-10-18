@@ -73,7 +73,7 @@ export const CustomerTopbar: FC<CustomerTopbarProps> = ({
       </Link>
 
       {/* Segmented Filter Pills */}
-      <div className={styles.centerActions}>
+      {/* <div className={styles.centerActions}>
         <div className={styles.segmentedPillGroup}>
           <button
             type="button"
@@ -96,7 +96,7 @@ export const CustomerTopbar: FC<CustomerTopbarProps> = ({
             <span>Dishes</span>
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Notifications & Mobile Cart Trigger */}
       <div className={styles.rightArea}>
@@ -120,16 +120,7 @@ export const CustomerTopbar: FC<CustomerTopbarProps> = ({
         >
           <ShoppingBag size={18} />
           {totalCount > 0 && (
-            <Badge
-              variant="default"
-              style={{
-                position: "absolute",
-                top: -6,
-                right: -6,
-                padding: "0 4px",
-                fontSize: 10,
-              }}
-            >
+            <Badge variant="default" className={styles.cartBadge}>
               {totalCount}
             </Badge>
           )}

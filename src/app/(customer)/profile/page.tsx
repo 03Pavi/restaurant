@@ -18,6 +18,8 @@ import {
   Navigation,
   X,
   Building,
+  Loader2,
+  Compass,
 } from "lucide-react";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase/client";
@@ -65,6 +67,9 @@ const ProfilePage: FC = () => {
   const [modalPostalCode, setModalPostalCode] = useState("");
   const [modalDeliveryNotes, setModalDeliveryNotes] = useState("");
   const [modalIsDefault, setModalIsDefault] = useState(false);
+  const [modalCoords, setModalCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [locationStatusMsg, setLocationStatusMsg] = useState("");
   const [modalError, setModalError] = useState("");
 
   // Redirect if not authenticated
@@ -107,16 +112,34 @@ const ProfilePage: FC = () => {
     setProfileSuccessMsg("");
 
     try {
-      const userDocRef = doc(db, "users", user.id);
-      await setDoc(
-        userDocRef,
-        {
+      // 1. Update in Supabase
+      await fetch("/api/user/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: user.id,
           name,
           phone,
-          updatedAt: serverTimestamp(),
-        },
-        { merge: true }
-      );
+          email: user.email,
+          role: user.role,
+        }),
+      });
+
+      // 2. Update in Firestore
+      try {
+        const userDocRef = doc(db, "users", user.id);
+        await setDoc(
+          userDocRef,
+          {
+            name,
+            phone,
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true }
+        );
+      } catch (fbErr) {
+        console.warn("Firestore profile sync skipped:", fbErr);
+      }
 
       setProfileSuccessMsg("Profile updated successfully!");
       setTimeout(() => setProfileSuccessMsg(""), 3500);
@@ -138,6 +161,9 @@ const ProfilePage: FC = () => {
     setModalCity("");
     setModalPostalCode("");
     setModalDeliveryNotes("");
+    setModalCoords(null);
+    setIsDetectingLocation(false);
+    setLocationStatusMsg("");
     setModalIsDefault(addresses.length === 0);
     setModalError("");
     setIsModalOpen(true);
@@ -154,9 +180,147 @@ const ProfilePage: FC = () => {
     setModalCity(addr.city);
     setModalPostalCode(addr.postalCode);
     setModalDeliveryNotes(addr.deliveryNotes || "");
+    setModalCoords(
+      addr.latitude && addr.longitude
+        ? { lat: addr.latitude, lng: addr.longitude }
+        : null
+    );
+    setIsDetectingLocation(false);
+    setLocationStatusMsg("");
     setModalIsDefault(addr.isDefault);
     setModalError("");
     setIsModalOpen(true);
+  };
+
+  // Auto-detect location & reverse geocode address
+  const handleDetectLocation = async () => {
+    setIsDetectingLocation(true);
+    setLocationStatusMsg("Locating your device...");
+    setModalError("");
+
+    const reverseGeocode = async (lat: number, lng: number) => {
+      try {
+        setLocationStatusMsg("Fetching address details...");
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
+          {
+            headers: {
+              "Accept-Language": "en",
+            },
+          }
+        );
+
+        if (res.ok) {
+          const data = await res.json();
+          const addr = data.address || {};
+
+          const streetParts = [
+            addr.road || addr.pedestrian || addr.suburb || addr.neighbourhood || "",
+          ].filter(Boolean);
+
+          const apartmentParts = [
+            addr.house_number || "",
+            addr.building || addr.amenity || addr.residential || "",
+          ].filter(Boolean);
+
+          const cityVal =
+            addr.city ||
+            addr.town ||
+            addr.village ||
+            addr.suburb ||
+            addr.county ||
+            addr.state_district ||
+            "";
+          const postalVal = addr.postcode || "";
+
+          if (streetParts.length > 0 && !modalStreet) {
+            setModalStreet(streetParts.join(", "));
+          } else if (data.display_name && !modalStreet) {
+            const split = data.display_name.split(",");
+            setModalStreet(split.slice(0, 2).join(",").trim());
+          }
+
+          if (apartmentParts.length > 0 && !modalApartment) {
+            setModalApartment(apartmentParts.join(" "));
+          }
+
+          if (cityVal && !modalCity) {
+            setModalCity(cityVal);
+          }
+
+          if (postalVal && !modalPostalCode) {
+            setModalPostalCode(postalVal);
+          }
+        }
+      } catch (err) {
+        console.warn("Reverse geocode failed:", err);
+      }
+    };
+
+    const onLocationFound = async (lat: number, lng: number) => {
+      setModalCoords({ lat, lng });
+      await reverseGeocode(lat, lng);
+      setLocationStatusMsg("Location pinned on map!");
+      setTimeout(() => setLocationStatusMsg(""), 4000);
+      setIsDetectingLocation(false);
+    };
+
+    const fallbackToIp = async () => {
+      try {
+        setLocationStatusMsg("Locating via network IP...");
+        const res = await fetch("https://ipapi.co/json/");
+        if (res.ok) {
+          const ipData = await res.json();
+          if (ipData.latitude && ipData.longitude) {
+            if (ipData.city && !modalCity) setModalCity(ipData.city);
+            if (ipData.postal && !modalPostalCode) setModalPostalCode(ipData.postal);
+            await onLocationFound(Number(ipData.latitude), Number(ipData.longitude));
+            return;
+          }
+        }
+      } catch (ipErr) {
+        console.warn("ipapi.co lookup failed:", ipErr);
+      }
+
+      try {
+        const ipwhoRes = await fetch("https://ipwho.is/");
+        if (ipwhoRes.ok) {
+          const ipwhoData = await ipwhoRes.json();
+          if (ipwhoData.latitude && ipwhoData.longitude) {
+            if (ipwhoData.city && !modalCity) setModalCity(ipwhoData.city);
+            if (ipwhoData.postal && !modalPostalCode) setModalPostalCode(ipwhoData.postal);
+            await onLocationFound(Number(ipwhoData.latitude), Number(ipwhoData.longitude));
+            return;
+          }
+        }
+      } catch (ipwhoErr) {
+        console.warn("ipwho.is lookup failed:", ipwhoErr);
+      }
+
+      setLocationStatusMsg("");
+      setModalError("Could not detect location automatically. Please enter your address manually.");
+      setIsDetectingLocation(false);
+    };
+
+    if (typeof window !== "undefined" && "geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          onLocationFound(latitude, longitude);
+        },
+        async (geoError) => {
+          console.warn("Geolocation prompt declined or unavailable, falling back to IP:", geoError.message);
+          await fallbackToIp();
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 8000,
+          maximumAge: 60000,
+        }
+      );
+    } else {
+      await fallbackToIp();
+    }
   };
 
   // Submit address form (create or edit)
@@ -182,6 +346,8 @@ const ProfilePage: FC = () => {
             city: modalCity,
             postalCode: modalPostalCode,
             deliveryNotes: modalDeliveryNotes,
+            latitude: modalCoords?.lat ?? existing.latitude,
+            longitude: modalCoords?.lng ?? existing.longitude,
             isDefault: modalIsDefault,
           });
         }
@@ -195,6 +361,8 @@ const ProfilePage: FC = () => {
           city: modalCity,
           postalCode: modalPostalCode,
           deliveryNotes: modalDeliveryNotes,
+          latitude: modalCoords?.lat,
+          longitude: modalCoords?.lng,
           isDefault: modalIsDefault,
         });
       }
@@ -335,6 +503,13 @@ const ProfilePage: FC = () => {
 
                       {addr.isDefault && (
                         <span className={styles.defaultBadge}>Default</span>
+                      )}
+
+                      {addr.latitude && addr.longitude && (
+                        <span className={styles.gpsBadge}>
+                          <Compass size={11} />
+                          <span>GPS Pinned</span>
+                        </span>
                       )}
                     </div>
 
@@ -539,6 +714,75 @@ const ProfilePage: FC = () => {
                   ))}
                 </div>
               </div>
+
+              {/* GPS Location Auto-Detection Banner */}
+              <div className={styles.locationDetectionBanner}>
+                <div className={styles.detectionInfo}>
+                  <div className={styles.detectionTitleRow}>
+                    <Navigation size={15} className={styles.detectIcon} />
+                    <span className={styles.detectionTitle}>Pinpoint Current Location</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDetectLocation}
+                  disabled={isDetectingLocation}
+                  className={styles.detectLocationBtn}
+                >
+                  {isDetectingLocation ? (
+                    <>
+                      <Loader2 size={15} className={styles.spinIcon} />
+                      <span>Detecting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Compass size={15} />
+                      <span>Use Current Location</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {locationStatusMsg && (
+                <div className={styles.locationStatusBadge}>
+                  <CheckCircle2 size={14} />
+                  <span>{locationStatusMsg}</span>
+                </div>
+              )}
+
+              {/* Map Preview with Pin Marker */}
+              {modalCoords && (
+                <div className={styles.mapContainer}>
+                  <div className={styles.mapHeader}>
+                    <div className={styles.mapTitle}>
+                      <MapPin size={15} className={styles.mapPinPulse} />
+                      <span>Delivery Location Marker</span>
+                    </div>
+                    <span className={styles.coordsBadge}>
+                      {modalCoords.lat.toFixed(5)}°, {modalCoords.lng.toFixed(5)}°
+                    </span>
+                  </div>
+                  <div className={styles.mapFrameWrapper}>
+                    <iframe
+                      title="Delivery Location Pin"
+                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${(
+                        modalCoords.lng - 0.005
+                      ).toFixed(6)}%2C${(modalCoords.lat - 0.005).toFixed(6)}%2C${(
+                        modalCoords.lng + 0.005
+                      ).toFixed(6)}%2C${(modalCoords.lat + 0.005).toFixed(
+                        6
+                      )}&layer=mapnik&marker=${modalCoords.lat.toFixed(
+                        6
+                      )}%2C${modalCoords.lng.toFixed(6)}`}
+                      className={styles.mapIframe}
+                      loading="lazy"
+                    />
+                  </div>
+                  <p className={styles.mapCaption}>
+                    Coordinates captured. You can adjust your house/flat or street details below.
+                  </p>
+                </div>
+              )}
 
               {/* Receiver Info */}
               <div className={styles.formRow}>

@@ -23,6 +23,8 @@ export interface UserAddress {
   postalCode: string;
   deliveryNotes?: string;
   isDefault: boolean;
+  latitude?: number;
+  longitude?: number;
   createdAt: string;
 }
 
@@ -62,30 +64,51 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
       loadAddressesFromFirestore: async (userId: string) => {
         if (!userId) return;
         set({ isLoading: true });
+
+        let loaded: UserAddress[] = [];
+
+        // 1. Try fetching from Supabase API
         try {
-          const addressesRef = collection(db, "users", userId, "addresses");
-          const snapshot = await getDocs(addressesRef);
-          const loaded: UserAddress[] = [];
-
-          snapshot.forEach((d) => {
-            loaded.push({ id: d.id, ...d.data() } as UserAddress);
-          });
-
-          // Sort default first, then by date
-          loaded.sort((a, b) => (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0));
-
-          set((state) => ({
-            addresses: loaded,
-            selectedAddressId:
-              state.selectedAddressId && loaded.some((a) => a.id === state.selectedAddressId)
-                ? state.selectedAddressId
-                : loaded.find((a) => a.isDefault)?.id || loaded[0]?.id || null,
-            isLoading: false,
-          }));
-        } catch (err) {
-          console.error("Failed to load addresses from Firestore:", err);
-          set({ isLoading: false });
+          const res = await fetch(`/api/user/addresses?userId=${encodeURIComponent(userId)}`);
+          if (res.ok) {
+            const json = await res.json();
+            if (Array.isArray(json.addresses) && json.addresses.length > 0) {
+              loaded = json.addresses;
+            }
+          }
+        } catch (apiErr) {
+          console.warn("Supabase address fetch skipped:", apiErr);
         }
+
+        // 2. Also try Firestore collection if Supabase didn't yield addresses
+        if (loaded.length === 0) {
+          try {
+            const addressesRef = collection(db, "users", userId, "addresses");
+            const snapshot = await getDocs(addressesRef);
+
+            snapshot.forEach((d) => {
+              loaded.push({ id: d.id, ...d.data() } as UserAddress);
+            });
+          } catch (fbErr) {
+            console.warn("Firestore addresses check skipped:", fbErr);
+          }
+        }
+
+        // Merge with locally stored addresses if server was empty
+        if (loaded.length === 0 && get().addresses.length > 0) {
+          loaded = get().addresses;
+        }
+
+        loaded.sort((a, b) => (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0));
+
+        set((state) => ({
+          addresses: loaded,
+          selectedAddressId:
+            state.selectedAddressId && loaded.some((a) => a.id === state.selectedAddressId)
+              ? state.selectedAddressId
+              : loaded.find((a) => a.isDefault)?.id || loaded[0]?.id || null,
+          isLoading: false,
+        }));
       },
 
       addAddressToFirestore: async (userId, addressData) => {
@@ -110,12 +133,26 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
           selectedAddressId: newId,
         });
 
+        // 1. Save to Supabase API
+        try {
+          await fetch("/api/user/addresses", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...newAddress,
+              userId,
+            }),
+          });
+        } catch (apiErr) {
+          console.warn("Supabase address save error:", apiErr);
+        }
+
+        // 2. Save to Firestore collection
         if (userId) {
           try {
             const addrDocRef = doc(db, "users", userId, "addresses", newId);
             await setDoc(addrDocRef, newAddress);
 
-            // If marked default, update other documents
             if (addressData.isDefault) {
               for (const a of currentAddresses) {
                 if (a.isDefault) {
@@ -126,7 +163,7 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
               }
             }
           } catch (err) {
-            console.error("Error saving address to Firestore:", err);
+            console.warn("Firestore address save skipped:", err);
           }
         }
 
@@ -146,6 +183,21 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
 
         set({ addresses: currentList });
 
+        // 1. Update in Supabase
+        try {
+          await fetch("/api/user/addresses", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...updatedAddress,
+              userId,
+            }),
+          });
+        } catch (apiErr) {
+          console.warn("Supabase address update error:", apiErr);
+        }
+
+        // 2. Update in Firestore
         if (userId) {
           try {
             const addrDocRef = doc(db, "users", userId, "addresses", updatedAddress.id);
@@ -161,7 +213,7 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
               }
             }
           } catch (err) {
-            console.error("Error updating address in Firestore:", err);
+            console.warn("Firestore address update skipped:", err);
           }
         }
       },
@@ -178,11 +230,21 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
           selectedAddressId: nextSelected,
         });
 
+        // 1. Delete in Supabase
+        try {
+          await fetch(`/api/user/addresses?id=${encodeURIComponent(addressId)}`, {
+            method: "DELETE",
+          });
+        } catch (apiErr) {
+          console.warn("Supabase address delete error:", apiErr);
+        }
+
+        // 2. Delete in Firestore
         if (userId) {
           try {
             await deleteDoc(doc(db, "users", userId, "addresses", addressId));
           } catch (err) {
-            console.error("Error deleting address from Firestore:", err);
+            console.warn("Firestore address delete skipped:", err);
           }
         }
       },

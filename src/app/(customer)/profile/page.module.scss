@@ -347,6 +347,18 @@
   text-transform: uppercase;
 }
 
+.gpsBadge {
+  font-size: 10px;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-primary;
+  background-color: theme.$color-primary-subtle-bg;
+  padding: 2px 7px;
+  border-radius: theme.$radius-full;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
 .cardActions {
   display: flex;
   align-items: center;
@@ -550,26 +562,47 @@
   position: fixed;
   inset: 0;
   z-index: theme.$z-modal;
-  background-color: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(4px);
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
+
+  @media (max-width: 640px) {
+    padding: 0;
+    align-items: stretch;
+    justify-content: stretch;
+  }
 }
 
 .modalContent {
   width: 100%;
-  max-width: 520px;
+  max-width: 540px;
   max-height: 90vh;
   overflow-y: auto;
   background-color: #FFFFFF;
   border-radius: theme.$radius-2xl;
-  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.25);
+  box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.28);
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 18px;
+
+  @media (max-width: 640px) {
+    max-width: 100vw;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: none;
+    padding: 0;
+    gap: 0;
+    box-shadow: none;
+    overflow: hidden;
+  }
 }
 
 .modalHeader {
@@ -578,6 +611,15 @@
   justify-content: space-between;
   border-bottom: 1px solid theme.$color-divider;
   padding-bottom: 14px;
+
+  @media (max-width: 640px) {
+    padding: 18px 20px;
+    position: sticky;
+    top: 0;
+    background-color: #FFFFFF;
+    z-index: 10;
+    flex-shrink: 0;
+  }
 }
 
 .modalTitle {
@@ -592,36 +634,251 @@
   border: none;
   color: theme.$color-text-muted;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
   border-radius: theme.$radius-md;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s ease;
 
   &:hover {
     color: theme.$color-text-primary;
     background-color: #F1F5F9;
   }
+
+  @media (max-width: 640px) {
+    padding: 8px;
+    background-color: #F8FAFC;
+    border-radius: theme.$radius-full;
+  }
 }
 
 .modalErrorBanner {
-  padding: 8px 12px;
-  border-radius: theme.$radius-md;
+  padding: 10px 14px;
+  border-radius: theme.$radius-lg;
   background-color: #FEF2F2;
   color: #DC2626;
-  font-size: 12px;
+  font-size: 12.5px;
   border: 1px solid #FECACA;
+  font-weight: theme.$font-weight-semibold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  @media (max-width: 640px) {
+    margin: 14px 18px 0;
+  }
 }
 
 .modalForm {
   display: flex;
   flex-direction: column;
+  gap: 15px;
+
+  @media (max-width: 640px) {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 20px 24px;
+    -webkit-overflow-scrolling: touch;
+    gap: 16px;
+  }
+}
+
+// Location Detection Banner
+.locationDetectionBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 14px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #FFF7ED 0%, #FEF3C7 100%);
+  border: 1.5px solid #FED7AA;
+  border-radius: theme.$radius-xl;
+
+  @media (max-width: 520px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+}
+
+.detectionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detectionTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detectIcon {
+  color: theme.$color-primary;
+}
+
+.detectionTitle {
+  font-size: 13px;
+  font-weight: theme.$font-weight-bold;
+  color: #9A3412;
+}
+
+.detectionDesc {
+  margin: 0;
+  font-size: 11px;
+  color: #C2410C;
+  line-height: 1.35;
+}
+
+.detectLocationBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 15px;
+  background-color: theme.$color-primary;
+  color: #FFFFFF;
+  border: none;
+  border-radius: theme.$radius-lg;
+  font-size: 12.5px;
+  font-weight: theme.$font-weight-bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(232, 93, 4, 0.25);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: theme.$color-primary-dark;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(232, 93, 4, 0.35);
+  }
+
+  &:disabled {
+    opacity: 0.75;
+    cursor: wait;
+  }
+}
+
+.spinIcon {
+  animation: spin 0.8s linear infinite;
+}
+
+.locationStatusBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background-color: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+  border-radius: theme.$radius-lg;
+  font-size: 12px;
+  font-weight: theme.$font-weight-semibold;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Map Container & Pin Marker Display
+.mapContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1.5px solid #FED7AA;
+  border-radius: theme.$radius-xl;
+  background-color: #FFFFFF;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+}
+
+.mapHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background-color: #FFFDF9;
+  border-bottom: 1px solid theme.$color-divider;
+}
+
+.mapTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: theme.$font-weight-bold;
+  color: theme.$color-text-primary;
+}
+
+.mapPinPulse {
+  color: theme.$color-primary;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.coordsBadge {
+  font-size: 11px;
+  font-family: monospace;
+  font-weight: theme.$font-weight-bold;
+  color: #9A3412;
+  background-color: #FFEDD5;
+  padding: 2px 8px;
+  border-radius: theme.$radius-full;
+}
+
+.mapFrameWrapper {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  background-color: #E2E8F0;
+
+  @media (max-width: 640px) {
+    height: 170px;
+  }
+}
+
+.mapIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.mapCaption {
+  margin: 0;
+  padding: 8px 14px;
+  font-size: 11px;
+  color: theme.$color-text-muted;
+  background-color: #FAFBFD;
+  border-top: 1px solid theme.$color-divider;
+  line-height: 1.35;
 }
 
 .labelChips {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .chipBtn {
@@ -659,6 +916,7 @@
   color: theme.$color-text-body;
   cursor: pointer;
   user-select: none;
+  padding: 4px 0;
 }
 
 .modalActions {
@@ -669,6 +927,18 @@
   margin-top: 10px;
   border-top: 1px solid theme.$color-divider;
   padding-top: 16px;
+
+  @media (max-width: 640px) {
+    position: sticky;
+    bottom: 0;
+    background-color: #FFFFFF;
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+    margin-top: auto;
+    border-top: 1px solid theme.$color-border;
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+    z-index: 10;
+    flex-shrink: 0;
+  }
 }
 
 .cancelBtn {
@@ -680,14 +950,21 @@
   font-size: 13px;
   font-weight: theme.$font-weight-semibold;
   cursor: pointer;
+  transition: all 0.15s ease;
 
   &:hover {
     background-color: #F1F5F9;
   }
+
+  @media (max-width: 640px) {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+  }
 }
 
 .submitModalBtn {
-  padding: 9px 20px;
+  padding: 9px 22px;
   background-color: theme.$color-primary;
   color: #FFFFFF;
   border: none;
@@ -695,8 +972,16 @@
   font-size: 13px;
   font-weight: theme.$font-weight-bold;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(232, 93, 4, 0.2);
+  transition: all 0.2s ease;
 
   &:hover {
     background-color: theme.$color-primary-dark;
+  }
+
+  @media (max-width: 640px) {
+    flex: 2;
+    padding: 12px;
+    text-align: center;
   }
 }

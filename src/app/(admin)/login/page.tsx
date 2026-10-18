@@ -72,14 +72,28 @@ export default function LoginPage() {
         throw new Error("Failed to set session cookie.");
       }
 
-      // 2. Non-blocking Firestore sync in background (never blocks user login)
+      const sessionJson = await sessionRes.json();
+      const activeUser = sessionJson.user || {
+        id: user.uid,
+        email: user.email,
+        name: displayName,
+        role,
+      };
+
+      // 2. Immediately populate TanStack Query cache so UI instantly displays authenticated state
+      queryClient.setQueryData(["session"], {
+        user: activeUser,
+        isAuthenticated: true,
+      });
+
+      // 3. Non-blocking Firestore sync in background (never blocks user login)
       (async () => {
         try {
-          const userRef = doc(db, "users", user.uid);
+          const userRef = doc(db, "users", activeUser.id || user.uid);
           await setDoc(
             userRef,
             {
-              uid: user.uid,
+              uid: activeUser.id || user.uid,
               email: user.email,
               name: displayName,
               photoURL: user.photoURL,
@@ -93,9 +107,14 @@ export default function LoginPage() {
         }
       })();
 
-      // 3. Update query cache and immediately navigate to destination
-      await queryClient.invalidateQueries({ queryKey: ["session"] });
-      router.replace(role === "RESTAURANT_OWNER" ? "/admin/menu" : "/profile");
+      // 4. Invalidate queries and navigate to destination
+      queryClient.invalidateQueries({ queryKey: ["session"] });
+
+      const searchParams = new URLSearchParams(window.location.search);
+      const callbackUrl = searchParams.get("callbackUrl");
+      const targetPath = callbackUrl || (role === "RESTAURANT_OWNER" ? "/admin/menu" : "/profile");
+
+      router.replace(targetPath);
     } catch (err: unknown) {
       console.error("Google sign-in error:", err);
       const message = err instanceof Error ? err.message : "Failed to sign in with Google.";

@@ -8,7 +8,23 @@ export async function verifyAdminAuth(req: NextRequest): Promise<{ authorized: b
     return { authorized: true };
   }
 
-  // 2. Check Authorization header (Firebase token or Bearer token)
+  // 2. Check DineDirect session cookie (Firebase / Google Sign-in)
+  const sessionCookie = req.cookies.get("dinedirect_session");
+  if (sessionCookie?.value) {
+    try {
+      const decoded = JSON.parse(sessionCookie.value);
+      if (
+        decoded.role === "RESTAURANT_OWNER" ||
+        decoded.email?.toLowerCase() === "03pavitar.dev@gmail.com"
+      ) {
+        return { authorized: true };
+      }
+    } catch {
+      // ignore invalid cookie
+    }
+  }
+
+  // 3. Check Authorization header (Firebase token or Bearer token)
   const authHeader = req.headers.get("authorization");
   if (authHeader?.startsWith("Bearer ")) {
     const token = authHeader.substring(7);
@@ -18,7 +34,7 @@ export async function verifyAdminAuth(req: NextRequest): Promise<{ authorized: b
     }
   }
 
-  // 3. Fallback for development if RESTAURANT_OWNER role is provided via header
+  // 4. Fallback for development if RESTAURANT_OWNER role is provided via header
   if (process.env.NODE_ENV === "development") {
     const roleHeader = req.headers.get("x-user-role");
     if (roleHeader === "RESTAURANT_OWNER") {

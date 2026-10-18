@@ -22,6 +22,8 @@ export function useSessionQuery() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
+        cache: "no-store",
       });
 
       if (!res.ok) {

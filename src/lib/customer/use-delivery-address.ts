@@ -143,9 +143,6 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
 
         // 2. Fast Supabase save
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3500);
-
           await fetch("/api/user/addresses", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -153,9 +150,7 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
               ...newAddress,
               userId,
             }),
-            signal: controller.signal,
           });
-          clearTimeout(timeoutId);
         } catch (apiErr) {
           console.warn("Supabase address save notice:", apiErr);
         }
@@ -208,9 +203,6 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
 
         // 2. Fast Supabase update
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3500);
-
           await fetch("/api/user/addresses", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -218,9 +210,7 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
               ...updatedAddress,
               userId,
             }),
-            signal: controller.signal,
           });
-          clearTimeout(timeoutId);
         } catch (apiErr) {
           console.warn("Supabase address update notice:", apiErr);
         }
@@ -263,14 +253,9 @@ export const useDeliveryAddressStore = create<DeliveryAddressState>()(
 
         // 2. Fast Supabase delete
         try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 3500);
-
           await fetch(`/api/user/addresses?id=${encodeURIComponent(addressId)}`, {
             method: "DELETE",
-            signal: controller.signal,
           });
-          clearTimeout(timeoutId);
         } catch (apiErr) {
           console.warn("Supabase address delete notice:", apiErr);
         }

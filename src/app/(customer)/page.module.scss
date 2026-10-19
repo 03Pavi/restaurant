@@ -172,3 +172,19 @@
     font-size: theme.$font-size-xs;
   }
 }
+
+.adminActionGroup {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-2;
+}
+
+.emptyAdminActions {
+  display: flex;
+  align-items: center;
+  gap: theme.$space-3;
+  margin-top: theme.$space-3;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+

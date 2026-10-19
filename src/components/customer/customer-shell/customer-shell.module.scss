@@ -20,3 +20,14 @@
     padding: theme.$space-2 theme.$space-4 100px;
   }
 }
+
+.centerAreaAdmin {
+  padding: theme.$space-4 theme.$space-8 theme.$space-16;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  @media (max-width: 1024px) {
+    padding: theme.$space-3 theme.$space-4 100px;
+  }
+}
+

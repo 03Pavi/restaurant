@@ -2,32 +2,52 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, ShoppingBag, UtensilsCrossed } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  UtensilsCrossed,
+  QrCode,
+  Tag,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import styles from "./admin-nav.module.scss";
 
-export function AdminNav() {
+function AdminNavContent() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentTab = searchParams.get("tab") || "menu";
 
   const links = [
     {
-      href: "/admin/dashboard",
-      label: "Dashboard",
-      icon: LayoutDashboard,
-      active: pathname === "/admin/dashboard",
+      href: "/admin?tab=menu",
+      label: "Menu & Items",
+      icon: UtensilsCrossed,
+      active: (pathname === "/admin" && currentTab === "menu") || pathname === "/admin/menu",
+    },
+    {
+      href: "/admin?tab=qr",
+      label: "QR & Scans",
+      icon: QrCode,
+      active: pathname === "/admin" && currentTab === "qr",
+    },
+    {
+      href: "/admin?tab=offers",
+      label: "Offers & Coupons",
+      icon: Tag,
+      active: pathname === "/admin" && currentTab === "offers",
     },
     {
       href: "/admin/orders",
       label: "Kitchen Kanban",
       icon: ShoppingBag,
-      active: pathname === "/admin/orders",
+      active: pathname.startsWith("/admin/orders"),
     },
     {
-      href: "/admin/menu",
-      label: "Menu Management",
-      icon: UtensilsCrossed,
-      active: pathname === "/admin/menu",
+      href: "/admin/dashboard",
+      label: "Operations Dashboard",
+      icon: LayoutDashboard,
+      active: pathname.startsWith("/admin/dashboard"),
     },
   ];
 
@@ -47,5 +67,13 @@ export function AdminNav() {
         );
       })}
     </nav>
+  );
+}
+
+export function AdminNav() {
+  return (
+    <React.Suspense fallback={null}>
+      <AdminNavContent />
+    </React.Suspense>
   );
 }

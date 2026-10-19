@@ -1,0 +1,341 @@
+@use "@/styles/theme" as theme;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: theme.$space-6;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: theme.$space-4;
+  padding-bottom: theme.$space-4;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(234, 88, 12, 0.1);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 650px;
+  line-height: 1.5;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: theme.$space-4;
+}
+
+.statCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.statIconWrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--color-surface-hover);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.statLabel {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.statValue {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.couponsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: theme.$space-5;
+}
+
+.couponCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: rgba(234, 88, 12, 0.35);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.couponCardInactive {
+  opacity: 0.6;
+  background: var(--color-surface-hover);
+}
+
+.couponTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.codeBadgeGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.codePill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(234, 88, 12, 0.1);
+  border: 1px dashed var(--color-primary);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.codeText {
+  font-family: monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.05em;
+}
+
+.copyButton {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--color-primary);
+  }
+}
+
+.checkIcon {
+  color: #16a34a;
+}
+
+.statusBadge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.statusActive {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+
+.statusPaused {
+  background: rgba(148, 163, 184, 0.15);
+  color: #64748b;
+}
+
+.toggleGroup {
+  display: flex;
+  align-items: center;
+}
+
+.couponBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.discountAmount {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+}
+
+.couponDescription {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.rulesList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.ruleItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+
+  strong {
+    color: var(--color-text-primary);
+  }
+}
+
+.couponFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.redemptionStats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.redemptionCount {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.savedAmount {
+  font-size: 0.75rem;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+
+  &:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+  }
+}
+
+/* Modal Form Styles */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.typeSelector {
+  display: flex;
+  background: var(--color-surface-hover);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.typeBtn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.typeBtnActive {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.formError {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}

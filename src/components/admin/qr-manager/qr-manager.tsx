@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState, useEffect, useRef } from "react";
+import { FC, useState, useEffect, useRef, useMemo } from "react";
 import {
   QrCode,
   Download,
@@ -9,42 +9,111 @@ import {
   Check,
   ExternalLink,
   Users,
-  TrendingUp,
   Sparkles,
   Smartphone,
+  Plus,
+  Trash2,
+  Utensils,
+  Gift,
+  Tag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  QRCodeData,
+  QRCodeType,
+  fetchQRCodes,
+  createQRCode,
+  deleteQRCode,
+} from "@/lib/firebase/qr-service";
 import styles from "./qr-manager.module.scss";
 
-interface TableInfo {
-  id: string;
-  name: string;
-  scansToday: number;
-  location: string;
-}
-
-const TABLES: TableInfo[] = [
-  { id: "T1", name: "Table 1", scansToday: 8, location: "Window Section" },
-  { id: "T2", name: "Table 2", scansToday: 12, location: "Center Dining" },
-  { id: "T3", name: "Table 3", scansToday: 19, location: "Family Booth" },
-  { id: "T4", name: "Table 4", scansToday: 9, location: "Patio Garden" },
-  { id: "T5", name: "Table 5", scansToday: 4, location: "VIP Lounge" },
-  { id: "COUNTER", name: "Counter / Takeaway", scansToday: 16, location: "Main Counter" },
-];
-
 export const QRManager: FC = () => {
-  const [selectedTable, setSelectedTable] = useState<string>("T1");
+  const [tables, setTables] = useState<QRCodeData[]>([]);
+  const [selectedTableId, setSelectedTableId] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<"ALL" | "TABLE" | "OFFER_SCRATCH">("ALL");
   const [copied, setCopied] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Form State
+  const [selectedType, setSelectedType] = useState<QRCodeType>("TABLE");
+  const [newTableName, setNewTableName] = useState("");
+  const [newTableNumber, setNewTableNumber] = useState("");
+  const [newLocation, setNewLocation] = useState("");
+  const [newOfferCode, setNewOfferCode] = useState("DIRECT20");
+  const [newDiscountReward, setNewDiscountReward] = useState("Flat 20% OFF Your Order");
+  const [newDescription, setNewDescription] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+
   const printRef = useRef<HTMLDivElement>(null);
 
-  const currentTable = TABLES.find((t) => t.id === selectedTable) || TABLES[0];
-  const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
-  const dineInUrl = `${origin}/?table=${selectedTable.toLowerCase()}`;
+  // Load from Firestore collection
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await fetchQRCodes();
+        if (mounted && data) {
+          setTables(data);
+          if (data.length > 0) {
+            setSelectedTableId(data[0].id);
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to load QR codes from collection:", err);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const filteredTables = useMemo(() => {
+    if (activeTab === "ALL") return tables;
+    return tables.filter(
+      (t) => (t.type || (t.tableNumber ? "TABLE" : "OFFER_SCRATCH")) === activeTab
+    );
+  }, [tables, activeTab]);
+
+  const currentTable = useMemo(() => {
+    return tables.find((t) => t.id === selectedTableId) || filteredTables[0] || tables[0] || null;
+  }, [tables, filteredTables, selectedTableId]);
+
+  const isScratch = currentTable?.type === "OFFER_SCRATCH";
+
+  // Compute destination URL for both types
+  const targetUrl = useMemo(() => {
+    if (!currentTable) return "";
+    const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+
+    if (currentTable.type === "OFFER_SCRATCH") {
+      const code = encodeURIComponent(currentTable.offerCode || "DIRECT20");
+      const reward = encodeURIComponent(currentTable.discountReward || "Flat 20% OFF Your Order");
+      return `${origin}/?scratch=true&code=${code}&reward=${reward}&ref=${currentTable.id}`;
+    }
+
+    const tableParam = encodeURIComponent(currentTable.tableNumber || currentTable.id.toLowerCase());
+    return `${origin}/?table=${tableParam}`;
+  }, [currentTable]);
 
   // Generate crisp QR code on canvas
   useEffect(() => {
-    // Generate QR using canvas or QR server
+    if (!currentTable || !targetUrl) {
+      setQrDataUrl("");
+      return;
+    }
+
     const size = 320;
     const canvas = document.createElement("canvas");
     canvas.width = size;
@@ -52,7 +121,6 @@ export const QRManager: FC = () => {
     const ctx = canvas.getContext("2d");
 
     if (ctx) {
-      // Create high-contrast fallback QR matrix or fetch standard QR code
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
@@ -68,28 +136,30 @@ export const QRManager: FC = () => {
         ctx.arc(center, center, badgeSize / 2 + 4, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = "#ea580c"; // DineDirect brand orange
+        // Distinct badge color for Table vs Scratch Card
+        ctx.fillStyle = isScratch ? "#7c3aed" : "#ea580c";
         ctx.beginPath();
         ctx.arc(center, center, badgeSize / 2, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 18px sans-serif";
+        ctx.font = isScratch ? "bold 20px sans-serif" : "bold 17px sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("DD", center, center);
+        ctx.fillText(isScratch ? "🎁" : "DD", center, center);
 
         setQrDataUrl(canvas.toDataURL("image/png"));
       };
-      // Encode URL to QR Server API for fast high-res SVG/PNG
-      const encoded = encodeURIComponent(dineInUrl);
+
+      const encoded = encodeURIComponent(targetUrl);
       img.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encoded}&margin=2&color=0f172a`;
     }
-  }, [dineInUrl, selectedTable]);
+  }, [targetUrl, currentTable, isScratch]);
 
   const handleCopyLink = async () => {
+    if (!targetUrl) return;
     try {
-      await navigator.clipboard.writeText(dineInUrl);
+      await navigator.clipboard.writeText(targetUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -100,7 +170,8 @@ export const QRManager: FC = () => {
   const handleDownload = () => {
     if (!qrDataUrl) return;
     const link = document.createElement("a");
-    link.download = `dinedirect-qr-${selectedTable.toLowerCase()}.png`;
+    const nameSlug = (currentTable?.name || "code").toLowerCase().replace(/\s+/g, "-");
+    link.download = `dinedirect-${currentTable?.type === "OFFER_SCRATCH" ? "scratch" : "table"}-${nameSlug}.png`;
     link.href = qrDataUrl;
     link.click();
   };
@@ -109,7 +180,80 @@ export const QRManager: FC = () => {
     window.print();
   };
 
-  const totalScans = TABLES.reduce((sum, t) => sum + t.scansToday, 0);
+  const handleCreateQR = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTableName.trim()) {
+      setFormError("Name / Title is required.");
+      return;
+    }
+
+    if (selectedType === "TABLE" && !newTableNumber.trim()) {
+      setFormError("Table number is required for Table QR.");
+      return;
+    }
+
+    try {
+      const created = await createQRCode({
+        type: selectedType,
+        name: newTableName,
+        tableNumber: selectedType === "TABLE" ? newTableNumber : undefined,
+        location: newLocation || (selectedType === "TABLE" ? "Main Dining" : "Packaging / Bill Folder"),
+        offerCode: selectedType === "OFFER_SCRATCH" ? (newOfferCode || "DIRECT20") : undefined,
+        discountReward: selectedType === "OFFER_SCRATCH" ? (newDiscountReward || "Flat 20% OFF") : undefined,
+        description: newDescription || undefined,
+      });
+
+      setTables((prev) => [...prev, created]);
+      setSelectedTableId(created.id);
+      setIsAddModalOpen(false);
+
+      // Reset form
+      setNewTableName("");
+      setNewTableNumber("");
+      setNewLocation("");
+      setNewOfferCode("DIRECT20");
+      setNewDiscountReward("Flat 20% OFF Your Order");
+      setNewDescription("");
+      setFormError(null);
+    } catch (err: unknown) {
+      setFormError(err instanceof Error ? err.message : "Failed to create QR code.");
+    }
+  };
+
+  const handleDeleteTable = async (id: string) => {
+    try {
+      await deleteQRCode(id);
+      setTables((prev) => {
+        const remaining = prev.filter((t) => t.id !== id);
+        if (selectedTableId === id) {
+          setSelectedTableId(remaining[0]?.id || "");
+        }
+        return remaining;
+      });
+    } catch (err) {
+      console.warn("Delete error:", err);
+    }
+  };
+
+  // Analytics derived from collection
+  const totalScans = useMemo(() => {
+    return tables.reduce((sum, t) => sum + (t.scansToday || 0), 0);
+  }, [tables]);
+
+  const tableCount = useMemo(() => {
+    return tables.filter((t) => (t.type || (t.tableNumber ? "TABLE" : "OFFER_SCRATCH")) === "TABLE").length;
+  }, [tables]);
+
+  const scratchCount = useMemo(() => {
+    return tables.filter((t) => (t.type || (t.tableNumber ? "TABLE" : "OFFER_SCRATCH")) === "OFFER_SCRATCH").length;
+  }, [tables]);
+
+  const topTable = useMemo(() => {
+    if (tables.length === 0) return { name: "No codes yet", scansToday: 0 };
+    return tables.reduce((prev, curr) =>
+      (curr.scansToday || 0) > (prev.scansToday || 0) ? curr : prev
+    );
+  }, [tables]);
 
   return (
     <div className={styles.container}>
@@ -117,22 +261,26 @@ export const QRManager: FC = () => {
         <div className={styles.headerInfo}>
           <div className={styles.badge}>
             <QrCode size={16} />
-            <span>Smart Dine-In QR System</span>
+            <span>Live Firestore Collection: qr_codes</span>
           </div>
-          <h2 className={styles.title}>Dine-In QR Codes &amp; Table Scans</h2>
+          <h2 className={styles.title}>QR Codes &amp; Scratch Deals Manager</h2>
           <p className={styles.subtitle}>
-            Empower guests to scan from their seats, explore your digital menu, and order instantly without waiting for waitstaff.
+            Generate QR codes for both <strong>Dine-In Tables</strong> (scan from seats) and <strong>Menu &amp; Offers Scratch Cards</strong> (for delivery bags, bills &amp; flyers).
           </p>
         </div>
 
         <div className={styles.headerActions}>
+          <Button variant="outline" size="sm" onClick={() => setIsAddModalOpen(true)}>
+            <Plus size={15} />
+            <span>Create New QR</span>
+          </Button>
           <Button variant="outline" size="sm" onClick={handleDownload} disabled={!qrDataUrl}>
             <Download size={15} />
             <span>Download PNG</span>
           </Button>
-          <Button variant="default" size="sm" onClick={handlePrint}>
+          <Button variant="default" size="sm" onClick={handlePrint} disabled={!currentTable}>
             <Printer size={15} />
-            <span>Print Standee</span>
+            <span>Print Standee / Card</span>
           </Button>
         </div>
       </div>
@@ -147,33 +295,33 @@ export const QRManager: FC = () => {
             <span className={styles.statLabel}>Today&apos;s Total Scans</span>
             <div className={styles.statValueRow}>
               <span className={styles.statValue}>{totalScans}</span>
-              <span className={styles.statTrend}>+18% vs yesterday</span>
+              <span className={styles.statTrend}>Live across all spots</span>
             </div>
           </div>
         </div>
 
         <div className={styles.statCard}>
           <div className={styles.statIconWrapper}>
-            <Users size={20} />
+            <Utensils size={20} />
           </div>
           <div className={styles.statContent}>
-            <span className={styles.statLabel}>Active Tables Seated</span>
+            <span className={styles.statLabel}>Dine-In Tables</span>
             <div className={styles.statValueRow}>
-              <span className={styles.statValue}>5 / 6</span>
-              <span className={styles.statSub}>83% capacity</span>
+              <span className={styles.statValue}>{tableCount} Spots</span>
+              <span className={styles.statSub}>Contactless dining</span>
             </div>
           </div>
         </div>
 
         <div className={styles.statCard}>
-          <div className={styles.statIconWrapper}>
-            <TrendingUp size={20} />
+          <div className={styles.statIconWrapper} style={{ color: "#8b5cf6" }}>
+            <Gift size={20} />
           </div>
           <div className={styles.statContent}>
-            <span className={styles.statLabel}>Most Active Table</span>
+            <span className={styles.statLabel}>Scratch Card Campaigns</span>
             <div className={styles.statValueRow}>
-              <span className={styles.statValue}>Table 3</span>
-              <span className={styles.statSub}>19 direct orders</span>
+              <span className={styles.statValue}>{scratchCount} Offers</span>
+              <span className={styles.statSub}>Flyers &amp; Delivery</span>
             </div>
           </div>
         </div>
@@ -183,10 +331,10 @@ export const QRManager: FC = () => {
             <Sparkles size={20} />
           </div>
           <div className={styles.statContent}>
-            <span className={styles.statLabel}>Direct Scan Conversion</span>
+            <span className={styles.statLabel}>Top Performer</span>
             <div className={styles.statValueRow}>
-              <span className={styles.statValue}>92%</span>
-              <span className={styles.statSub}>Order placed</span>
+              <span className={styles.statValue}>{topTable.name}</span>
+              <span className={styles.statSub}>{topTable.scansToday || 0} scans</span>
             </div>
           </div>
         </div>
@@ -194,94 +342,401 @@ export const QRManager: FC = () => {
 
       {/* Main Interactive Studio */}
       <div className={styles.studioLayout}>
-        {/* Left: Table Picker */}
+        {/* Left: QR Picker & Type Filter */}
         <div className={styles.tableSelectorCard}>
-          <h3 className={styles.sectionHeading}>Select Dine-In Spot</h3>
-          <p className={styles.sectionDesc}>Choose a table or counter to preview and generate its custom standee QR.</p>
+          <div className={styles.tableSelectorHeader}>
+            <div>
+              <h3 className={styles.sectionHeading}>Select QR Code</h3>
+              <p className={styles.sectionDesc}>
+                Preview, download, or print standees and scratch flyers.
+              </p>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setIsAddModalOpen(true)}>
+              <Plus size={14} />
+              <span>New QR</span>
+            </Button>
+          </div>
+
+          {/* Filter Tabs */}
+          <div className={styles.typeTabs}>
+            <button
+              type="button"
+              className={`${styles.typeTab} ${activeTab === "ALL" ? styles.typeTabActive : ""}`}
+              onClick={() => setActiveTab("ALL")}
+            >
+              All ({tables.length})
+            </button>
+            <button
+              type="button"
+              className={`${styles.typeTab} ${activeTab === "TABLE" ? styles.typeTabActive : ""}`}
+              onClick={() => setActiveTab("TABLE")}
+            >
+              <Utensils size={13} />
+              Tables ({tableCount})
+            </button>
+            <button
+              type="button"
+              className={`${styles.typeTab} ${activeTab === "OFFER_SCRATCH" ? styles.typeTabActive : ""}`}
+              onClick={() => setActiveTab("OFFER_SCRATCH")}
+            >
+              <Gift size={13} />
+              Scratch ({scratchCount})
+            </button>
+          </div>
 
           <div className={styles.tableList}>
-            {TABLES.map((table) => {
-              const isSelected = selectedTable === table.id;
-              return (
-                <button
-                  key={table.id}
-                  type="button"
-                  onClick={() => setSelectedTable(table.id)}
-                  className={`${styles.tableItem} ${isSelected ? styles.tableItemActive : ""}`}
-                >
-                  <div className={styles.tableItemMain}>
-                    <span className={styles.tableName}>{table.name}</span>
-                    <span className={styles.tableLocation}>{table.location}</span>
+            {isLoading ? (
+              <div className={styles.loadingTables}>Loading QR collection...</div>
+            ) : filteredTables.length === 0 ? (
+              <div className={styles.emptyTables}>
+                <QrCode size={36} />
+                <p>No QR codes match this filter.</p>
+                <Button variant="outline" size="sm" onClick={() => setIsAddModalOpen(true)}>
+                  <Plus size={14} />
+                  <span>Create First QR</span>
+                </Button>
+              </div>
+            ) : (
+              filteredTables.map((item) => {
+                const isSelected = selectedTableId === item.id;
+                const itemIsScratch = item.type === "OFFER_SCRATCH";
+
+                return (
+                  <div
+                    key={item.id}
+                    className={`${styles.tableItemWrapper} ${isSelected ? styles.tableItemActive : ""}`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setSelectedTableId(item.id)}
+                      className={styles.tableItemButton}
+                    >
+                      <div className={styles.tableItemMain}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <span className={styles.tableName}>{item.name}</span>
+                          <span
+                            className={`${styles.typeBadge} ${
+                              itemIsScratch ? styles.typeBadgeScratch : styles.typeBadgeTable
+                            }`}
+                          >
+                            {itemIsScratch ? "Scratch Deal" : "Table"}
+                          </span>
+                        </div>
+                        <span className={styles.tableLocation}>
+                          {itemIsScratch
+                            ? `Code: ${item.offerCode || "DIRECT20"} • ${item.location}`
+                            : item.location}
+                        </span>
+                      </div>
+                      <div className={styles.tableItemStats}>
+                        <span className={styles.tableScans}>{item.scansToday || 0} scans</span>
+                        {isSelected && <span className={styles.activeDot} />}
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteTable(item.id)}
+                      className={styles.deleteTableBtn}
+                      title={`Delete ${item.name}`}
+                    >
+                      <Trash2 size={13} />
+                    </button>
                   </div>
-                  <div className={styles.tableItemStats}>
-                    <span className={styles.tableScans}>{table.scansToday} scans</span>
-                    {isSelected && <span className={styles.activeDot} />}
-                  </div>
-                </button>
-              );
-            })}
+                );
+              })
+            )}
           </div>
         </div>
 
-        {/* Right: QR Standee Card */}
+        {/* Right: Printable Standee / Card Preview */}
         <div className={styles.standeePreviewCard} ref={printRef}>
-          <div className={styles.standeeInner}>
-            <div className={styles.standeeHeader}>
-              <span className={styles.brandTitle}>DineDirect</span>
-              <span className={styles.brandTagline}>Contactless Ordering</span>
-            </div>
-
-            <div className={styles.qrFrame}>
-              {qrDataUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={qrDataUrl} alt={`QR for ${currentTable.name}`} className={styles.qrImage} />
-              ) : (
-                <div className={styles.qrSkeleton}>
-                  <QrCode size={64} className={styles.pulse} />
-                  <span>Generating Code...</span>
-                </div>
-              )}
-            </div>
-
-            <div className={styles.standeeFooter}>
-              <div className={styles.tableCallout}>
-                <span className={styles.tableBadge}>{currentTable.name}</span>
-                <span className={styles.scanInstruction}>Scan with phone camera to order</span>
-              </div>
-              <div className={styles.quickFeatures}>
-                <span>✨ Zero Wait Time</span>
-                <span>•</span>
-                <span>🔥 Fresh Kitchen Dispatch</span>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.actionToolbar}>
-            <div className={styles.urlDisplay}>
-              <span className={styles.urlText}>{dineInUrl}</span>
-              <button
-                type="button"
-                className={styles.copyBtn}
-                onClick={handleCopyLink}
-                title="Copy Direct Link"
+          {currentTable ? (
+            <>
+              <div
+                className={`${styles.standeeInner} ${
+                  isScratch ? styles.scratchStandeeInner : ""
+                }`}
               >
-                {copied ? <Check size={16} className={styles.checkIcon} /> : <Copy size={16} />}
-                <span>{copied ? "Copied" : "Copy"}</span>
-              </button>
-            </div>
+                <div className={styles.standeeHeader}>
+                  <span
+                    className={`${styles.brandTitle} ${
+                      isScratch ? styles.scratchBrandTitle : ""
+                    }`}
+                  >
+                    {isScratch ? "DineDirect Rewards" : "DineDirect"}
+                  </span>
+                  <span className={styles.brandTagline}>
+                    {isScratch ? "Scan & Scratch To Win!" : "Contactless Table Ordering"}
+                  </span>
+                </div>
 
-            <a
-              href={dineInUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.testLink}
-            >
-              <span>Test Customer View</span>
-              <ExternalLink size={14} />
-            </a>
-          </div>
+                <div className={styles.qrFrame}>
+                  {qrDataUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={qrDataUrl}
+                      alt={`QR for ${currentTable.name}`}
+                      className={styles.qrImage}
+                    />
+                  ) : (
+                    <div className={styles.qrSkeleton}>
+                      <QrCode size={64} className={styles.pulse} />
+                      <span>Generating Code...</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className={styles.standeeFooter}>
+                  {isScratch ? (
+                    <div className={styles.scratchTableCallout}>
+                      <div className={styles.scratchRewardBox}>
+                        <span style={{ fontSize: "0.74rem", color: "#64748b", fontWeight: 700 }}>
+                          EXCLUSIVE PATRON COUPON
+                        </span>
+                        <span className={styles.scratchRewardVal}>
+                          ✨ {currentTable.discountReward || "Flat 20% OFF"}
+                        </span>
+                        <span className={styles.scratchPromoCode}>
+                          CODE: {currentTable.offerCode || "DIRECT20"}
+                        </span>
+                      </div>
+                      <span className={styles.scanInstruction}>
+                        Scan with phone camera to reveal interactive scratch card!
+                      </span>
+                    </div>
+                  ) : (
+                    <div className={styles.tableCallout}>
+                      <span className={styles.tableBadge}>
+                        {currentTable.name} {currentTable.tableNumber ? `(#${currentTable.tableNumber})` : ""}
+                      </span>
+                      <span className={styles.scanInstruction}>
+                        Scan with phone camera to order direct
+                      </span>
+                    </div>
+                  )}
+
+                  <div className={styles.quickFeatures}>
+                    {isScratch ? (
+                      <>
+                        <span>🎁 Secret Scratch Card</span>
+                        <span>•</span>
+                        <span>🔥 Save on Direct Orders</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>✨ Zero Wait Time</span>
+                        <span>•</span>
+                        <span>🔥 Fresh Kitchen Dispatch</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Toolbar */}
+              <div className={styles.actionToolbar}>
+                <div className={styles.urlDisplay}>
+                  <span className={styles.urlText}>{targetUrl}</span>
+                  <button
+                    type="button"
+                    className={styles.copyBtn}
+                    onClick={handleCopyLink}
+                    title="Copy Direct Link"
+                  >
+                    {copied ? <Check size={16} className={styles.checkIcon} /> : <Copy size={16} />}
+                    <span>{copied ? "Copied" : "Copy"}</span>
+                  </button>
+                </div>
+
+                <a
+                  href={targetUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.testLink}
+                >
+                  <span>{isScratch ? "Test Scratch Card Flow" : "Test Table Dine-In"}</span>
+                  <ExternalLink size={14} />
+                </a>
+              </div>
+            </>
+          ) : (
+            <div className={styles.noTableSelected}>
+              <QrCode size={48} />
+              <h4>No QR Selected</h4>
+              <p>Add a table or promotional scratch card QR to generate customized, printable standees.</p>
+              <Button size="sm" onClick={() => setIsAddModalOpen(true)}>
+                <Plus size={14} />
+                <span>Create QR Code</span>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Modal: Create QR Code (With Two Options) */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create QR Code</DialogTitle>
+          </DialogHeader>
+
+          {formError && <div className={styles.formError}>{formError}</div>}
+
+          {/* Option Selector: Table vs Scratch Card */}
+          <div className={styles.optionSelectorGrid}>
+            <div
+              className={`${styles.optionCard} ${
+                selectedType === "TABLE" ? styles.optionCardActive : ""
+              }`}
+              onClick={() => setSelectedType("TABLE")}
+              role="button"
+              tabIndex={0}
+            >
+              <div className={styles.optionCardHeader}>
+                <div className={styles.optionIconWrapper}>
+                  <Utensils size={18} />
+                </div>
+                <span className={styles.optionTitle}>Table QR</span>
+              </div>
+              <p className={styles.optionDesc}>
+                For dine-in tables, counters &amp; booths. Diners scan from their seats to view menu &amp; order.
+              </p>
+            </div>
+
+            <div
+              className={`${styles.optionCard} ${
+                selectedType === "OFFER_SCRATCH" ? styles.optionCardActiveScratch : ""
+              }`}
+              onClick={() => setSelectedType("OFFER_SCRATCH")}
+              role="button"
+              tabIndex={0}
+            >
+              <div className={styles.optionCardHeader}>
+                <div
+                  className={`${styles.optionIconWrapper} ${styles.optionIconWrapperScratch}`}
+                >
+                  <Gift size={18} />
+                </div>
+                <span className={styles.optionTitle}>Scratch Card QR</span>
+              </div>
+              <p className={styles.optionDesc}>
+                For delivery bags, bill folders &amp; social flyers. Diners scratch a card to unlock discounts.
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleCreateQR} className={styles.form}>
+            {selectedType === "TABLE" ? (
+              <>
+                <div className={styles.formRow}>
+                  <div className={styles.field}>
+                    <label htmlFor="tab-name" className={styles.fieldLabel}>
+                      Table Display Name *
+                    </label>
+                    <Input
+                      id="tab-name"
+                      placeholder="e.g. Table 6 or Patio Booth 2"
+                      value={newTableName}
+                      onChange={(e) => setNewTableName(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className={styles.field}>
+                    <label htmlFor="tab-num" className={styles.fieldLabel}>
+                      Table / Spot Number *
+                    </label>
+                    <Input
+                      id="tab-num"
+                      placeholder="e.g. 6"
+                      value={newTableNumber}
+                      onChange={(e) => setNewTableNumber(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.field}>
+                  <label htmlFor="tab-loc" className={styles.fieldLabel}>
+                    Dining Section / Location
+                  </label>
+                  <Input
+                    id="tab-loc"
+                    placeholder="e.g. Terrace Garden, Poolside, VIP Lounge"
+                    value={newLocation}
+                    onChange={(e) => setNewLocation(e.target.value)}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={styles.field}>
+                  <label htmlFor="scratch-name" className={styles.fieldLabel}>
+                    Campaign / Flyer Title *
+                  </label>
+                  <Input
+                    id="scratch-name"
+                    placeholder="e.g. Delivery Box Scratch & Win or Weekend Flyer"
+                    value={newTableName}
+                    onChange={(e) => setNewTableName(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className={styles.formRow}>
+                  <div className={styles.field}>
+                    <label htmlFor="scratch-code" className={styles.fieldLabel}>
+                      Promo Coupon Code *
+                    </label>
+                    <Input
+                      id="scratch-code"
+                      placeholder="e.g. DIRECT20 or FESTIVE50"
+                      value={newOfferCode}
+                      onChange={(e) => setNewOfferCode(e.target.value.toUpperCase())}
+                      required
+                    />
+                  </div>
+
+                  <div className={styles.field}>
+                    <label htmlFor="scratch-reward" className={styles.fieldLabel}>
+                      Secret Reward Headline *
+                    </label>
+                    <Input
+                      id="scratch-reward"
+                      placeholder="e.g. Flat 20% OFF or Flat ₹50 OFF"
+                      value={newDiscountReward}
+                      onChange={(e) => setNewDiscountReward(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.field}>
+                  <label htmlFor="scratch-loc" className={styles.fieldLabel}>
+                    Flyer Placement / Purpose
+                  </label>
+                  <Input
+                    id="scratch-loc"
+                    placeholder="e.g. Delivery Box Insert, Billing Folder, Takeout Bags"
+                    value={newLocation}
+                    onChange={(e) => setNewLocation(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsAddModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" variant="default">
+                {selectedType === "TABLE" ? "Create Table QR" : "Create Scratch Card QR"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

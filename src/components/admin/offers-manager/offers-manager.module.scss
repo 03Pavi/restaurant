@@ -96,11 +96,44 @@
   color: var(--color-text-primary);
 }
 
+.loadingState {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  padding: 24px;
+  text-align: center;
+}
+
+.emptyCoupons {
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: 14px;
+  padding: 36px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  color: var(--color-text-muted);
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+  }
+}
+
 .couponsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: theme.$space-5;
 }
+
 
 .couponCard {
   background: var(--color-surface);

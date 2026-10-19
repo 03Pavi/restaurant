@@ -118,3 +118,47 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model QRCode {
+  id             String      @id @default(uuid())
+  type           String      @default("TABLE") // "TABLE" | "OFFER_SCRATCH"
+  restaurantId   String?
+  name           String
+  tableNumber    String?
+  location       String?
+  campaignTitle  String?
+  offerCode      String?
+  discountReward String?
+  description    String?
+  scansToday     Int         @default(0)
+  totalScans     Int         @default(0)
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model QRScan {
+  id        String   @id @default(uuid())
+  tableId   String
+  userAgent String?
+  ip        String?
+  scannedAt DateTime @default(now())
+}
+
+model Offer {
+  id            String      @id @default(uuid())
+  restaurantId  String?
+  code          String      @unique
+  discountType  String      // "PERCENT" | "FLAT"
+  discountValue Float
+  minOrderValue Float       @default(0)
+  maxDiscount   Float?
+  expiryDate    String?
+  isActive      Boolean     @default(true)
+  timesRedeemed Int         @default(0)
+  totalSaved    Float       @default(0)
+  description   String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+

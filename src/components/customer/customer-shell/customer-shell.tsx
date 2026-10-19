@@ -1,9 +1,10 @@
 "use client";
 
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, Suspense } from "react";
 import { CustomerSidebar } from "@/components/customer/customer-sidebar";
 import { OrderSidebar } from "@/components/customer/order-sidebar";
 import { CartDrawer } from "@/components/customer/cart-drawer";
+import { ScratchCardModal } from "@/components/customer/scratch-card-modal";
 import { useSessionQuery } from "@/lib/auth/use-session-query";
 import styles from "./customer-shell.module.scss";
 
@@ -30,6 +31,13 @@ export const CustomerShell: FC<CustomerShellProps> = ({ children }) => {
 
       {/* Mobile / Tablet Slide-out Drawer - Hidden for Restaurant Owner */}
       {!isOwner && <CartDrawer />}
+
+      {/* Interactive Scratch Card Modal triggered by QR scan */}
+      {!isOwner && (
+        <Suspense fallback={null}>
+          <ScratchCardModal />
+        </Suspense>
+      )}
     </div>
   );
 };

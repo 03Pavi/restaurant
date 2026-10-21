@@ -6,11 +6,16 @@ import { useSessionQuery } from "@/lib/auth/use-session-query";
 import { useSignOutMutation } from "@/lib/auth/use-sign-out-mutation";
 import { Button } from "@/components/ui/button";
 import { AdminNav } from "@/components/admin/admin-nav";
+import { FullScreenLoader } from "@/components/ui/fullscreen-loader";
 import styles from "./admin-shell.module.scss";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
-  const { data: sessionData } = useSessionQuery();
+  const { data: sessionData, isPending } = useSessionQuery();
   const signOutMutation = useSignOutMutation();
+
+  if (isPending) {
+    return <FullScreenLoader message="Loading Admin Command Center..." />;
+  }
 
   const userName = sessionData?.user?.name || "Restaurant Owner";
   const userInitial = userName.charAt(0).toUpperCase();

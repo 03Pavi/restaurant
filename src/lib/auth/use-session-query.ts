@@ -15,7 +15,7 @@ export interface SessionData {
 }
 
 export function useSessionQuery() {
-  const { data, isPending, refetch } = useQuery<SessionData>({
+  const { data, isPending, isLoading, isFetching, error, refetch } = useQuery<SessionData>({
     queryKey: ["session"],
     queryFn: async (): Promise<SessionData> => {
       const res = await fetch("/api/me", {
@@ -38,6 +38,9 @@ export function useSessionQuery() {
   return {
     data,
     isPending,
+    isLoading,
+    isFetching,
+    error,
     refetch,
   };
 }

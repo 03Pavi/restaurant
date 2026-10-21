@@ -466,11 +466,19 @@
     padding: 0;
   }
 
+  .standeeInner {
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   .actionToolbar,
   .header,
   .statsGrid,
   .tableSelectorCard {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -507,6 +515,14 @@
     font-weight: 700;
     color: var(--color-text-primary);
   }
+
+  p {
+    margin: 0;
+    font-size: 0.88rem;
+    max-width: 320px;
+    line-height: 1.4;
+  }
+}
 
 .typeTabs {
   display: flex;

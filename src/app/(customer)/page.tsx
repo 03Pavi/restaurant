@@ -14,10 +14,11 @@ import { Button } from "@/components/ui/button";
 import { CategoryFormModal } from "@/components/admin/category-form";
 import { DishFormModal } from "@/components/admin/dish-form";
 import { AdminHome } from "@/components/admin/admin-home";
+import { FullScreenLoader } from "@/components/ui/fullscreen-loader";
 import styles from "./page.module.scss";
 
 const CustomerMenuPage: FC = () => {
-  const { data: sessionData } = useSessionQuery();
+  const { data: sessionData, isPending: isSessionLoading } = useSessionQuery();
   const isOwner = sessionData?.user?.role === "RESTAURANT_OWNER";
 
   const { data, isLoading, error } = useMenuQuery();
@@ -55,6 +56,11 @@ const CustomerMenuPage: FC = () => {
       })
       .filter((cat) => cat.items.length > 0);
   }, [categories, activeCategoryId, dietaryFilter]);
+
+  // Hold full screen loading until session query resolves
+  if (isSessionLoading) {
+    return <FullScreenLoader />;
+  }
 
   // If user is Restaurant Owner / Admin, show the Admin Home UI
   if (isOwner) {

@@ -177,7 +177,99 @@ export const QRManager: FC = () => {
   };
 
   const handlePrint = () => {
-    window.print();
+    if (!printRef.current) {
+      window.print();
+      return;
+    }
+
+    const printFrame = document.createElement("iframe");
+    printFrame.name = "printFrame";
+    printFrame.style.position = "fixed";
+    printFrame.style.top = "0";
+    printFrame.style.left = "0";
+    printFrame.style.width = "0";
+    printFrame.style.height = "0";
+    printFrame.style.border = "none";
+    printFrame.style.zIndex = "-9999";
+    document.body.appendChild(printFrame);
+
+    const frameDoc = printFrame.contentWindow?.document;
+    if (!frameDoc) {
+      window.print();
+      return;
+    }
+
+    const styleElements = Array.from(
+      document.querySelectorAll("link[rel='stylesheet'], style")
+    )
+      .map((el) => el.outerHTML)
+      .join("\n");
+
+    const standeeHtml = printRef.current.outerHTML;
+    const title = currentTable?.name
+      ? `DineDirect Standee - ${currentTable.name}`
+      : "DineDirect Standee";
+
+    frameDoc.open();
+    frameDoc.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>${title}</title>
+          ${styleElements}
+          <style>
+            @page {
+              size: auto;
+              margin: 15mm;
+            }
+            *, *::before, *::after {
+              box-sizing: border-box;
+            }
+            html, body {
+              background: #ffffff !important;
+              color: #0f172a !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              width: 100% !important;
+              min-height: 100vh !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            .${styles.standeeInner} {
+              margin: 0 auto !important;
+              box-shadow: none !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+          </style>
+        </head>
+        <body>
+          ${standeeHtml}
+        </body>
+      </html>
+    `);
+    frameDoc.close();
+
+    setTimeout(() => {
+      try {
+        printFrame.contentWindow?.focus();
+        printFrame.contentWindow?.print();
+      } catch (err) {
+        console.error("Print error:", err);
+      } finally {
+        setTimeout(() => {
+          if (document.body.contains(printFrame)) {
+            document.body.removeChild(printFrame);
+          }
+        }, 1500);
+      }
+    }, 250);
   };
 
   const handleCreateQR = async (e: React.FormEvent) => {
@@ -450,10 +542,12 @@ export const QRManager: FC = () => {
         </div>
 
         {/* Right: Printable Standee / Card Preview */}
-        <div className={styles.standeePreviewCard} ref={printRef}>
+        <div className={styles.standeePreviewCard}>
           {currentTable ? (
             <>
               <div
+                ref={printRef}
+                id="printable-standee"
                 className={`${styles.standeeInner} ${
                   isScratch ? styles.scratchStandeeInner : ""
                 }`}
